@@ -57,6 +57,9 @@ jobs:
       - name: Build
         env:
           NEXT_PUBLIC_N8N_WEBHOOK_URL: ${{ secrets.NEXT_PUBLIC_N8N_WEBHOOK_URL }}
+          NEXT_PUBLIC_GOOGLE_SHEET_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_SHEET_ID }}
+          NEXT_PUBLIC_GOOGLE_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_API_KEY }}
+          NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY }}
         run: |
           echo "Starting build process..."
           set -e  # Exit on any error
