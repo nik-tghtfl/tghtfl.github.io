@@ -2,6 +2,8 @@
 
 Anonymous employee feedback platform built with Next.js 14+, TypeScript, and Tailwind CSS.
 
+> **Note:** This site is deployed via GitHub Actions. The README is not the live site.
+
 ## Tech Stack
 
 - **Framework:** Next.js 14+ (App Router)
