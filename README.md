@@ -159,8 +159,24 @@ Explicitly out of scope by design.
 **Team Lead**  
 - Niklas Knezevic — [nik@taughtful.com](mailto:nik@taughtful.com)
 
+Trivia & background:
+- Creative Director
+- A big Swiftie
+- Has a "Platinum" trophy in Overcooked 2
+- Experience with AI: Regular user of Claude incl. "Projects", Perplexity, Canva
+
+
 **Team Member**  
 - Phil Karg — [phil@taughtful.com](mailto:phil@taughtful.com)
+- Project Manager for a SaaS company in e-learning
+
+Trivia & background:
+- Is in the market for an ExCel tattoo
+- Learns Bhahasa Malay
+- Experience with AI: Building customGPTs incl. Make.com automations - last undertaking, passing Clickup tasks to Slack channels
+- Regularly uses the Google Suite/Workspace, ChatGPT (wants to drop it for Gemini), Miro, Make.com (N8N looks interesting, but I don't have a paid plan)
+
+In short, we are non-technical, but are taking part to challenge ourselves and get as far as we can get.
 
 ---
 
