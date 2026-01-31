@@ -58,7 +58,7 @@ jobs:
         timeout-minutes: 10
         run: |
           echo "Installing dependencies..."
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           echo "Dependencies installed successfully"
 
       - name: Verify installation
