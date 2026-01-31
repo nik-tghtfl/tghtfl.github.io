@@ -20,7 +20,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center">
             <span className="text-2xl font-bold text-indigo-600">Quippi</span>
           </Link>
-          <div className="flex space-x-1">
+          <div className="flex gap-2">
             {navLinks.map((link) => {
               // Normalize pathname for comparison (handle trailing slashes)
               const normalizedPathname = pathname?.replace(/\/$/, "") || "/";
