@@ -689,7 +689,14 @@ export function calculateStatsFromFeedbacks(feedbacks: Feedback[]): DashboardSta
   // Calculate this week's feedback
   const weekAgo = new Date()
   weekAgo.setDate(weekAgo.getDate() - 7)
-  const thisWeek = feedbacks.filter(f => new Date(f.timestamp) > weekAgo).length
+  const thisWeek = feedbacks.filter(f => {
+    try {
+      const date = new Date(f.timestamp)
+      return !isNaN(date.getTime()) && date > weekAgo
+    } catch {
+      return false
+    }
+  }).length
 
   // Calculate category distribution
   const byCategory = {
