@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, MessageSquarePlus } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
+import { FeedbackForm } from "@/components/feedback-form"
 
 export default function FeedbackPage() {
   return (
@@ -25,22 +25,9 @@ export default function FeedbackPage() {
           Share your thoughts, concerns, or suggestions anonymously.
         </p>
 
-        <Card className="mt-8 border-dashed border-2 border-border bg-muted/30">
-          <CardHeader className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <MessageSquarePlus className="h-8 w-8 text-primary" />
-            </div>
-            <CardTitle className="mt-4 text-muted-foreground">
-              Feedback Form Coming Soon
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-sm text-muted-foreground">
-              The feedback form will go here. You will be able to submit
-              anonymous feedback that gets automatically categorized by AI.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="mt-8">
+          <FeedbackForm />
+        </div>
       </div>
     </div>
   )
