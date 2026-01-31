@@ -648,7 +648,18 @@ export function getFeedbacksByUser(userId: string, limit?: number): Feedback[] {
  * Convert a Feedback to FeedbackItem format
  */
 export function convertToFeedbackItem(feedback: Feedback): FeedbackItem {
-  const date = new Date(feedback.timestamp)
+  // Safely parse timestamp - handle invalid dates
+  let date: Date
+  try {
+    date = new Date(feedback.timestamp)
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      // If invalid, use current date as fallback
+      date = new Date()
+    }
+  } catch {
+    date = new Date()
+  }
   const dateStr = date.toISOString().split("T")[0] // YYYY-MM-DD format
 
   return {
