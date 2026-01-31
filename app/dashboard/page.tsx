@@ -25,9 +25,9 @@ export default function DashboardPage() {
   const { user, isLoading, isAdmin } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [activeFilter, setActiveFilter] = useState<Category>("All")
-  // Get fresh random data each time component mounts
+  // Get fresh random data each time component mounts - 20 random feedbacks
   const [randomFeedbacks, setRandomFeedbacks] = useState<FeedbackItem[]>(() => 
-    convertFeedbackArray(getRandomFeedbacks(25))
+    convertFeedbackArray(getRandomFeedbacks(20))
   )
   const [stats] = useState<DashboardStats>(() => getDashboardStats())
   const [categoryDistribution] = useState<CategoryData[]>(() => getCategoryDistribution())
@@ -76,10 +76,10 @@ export default function DashboardPage() {
     )
   }
 
-  // Filter feedback based on active filter
+  // Filter feedback based on active filter (filter from the random 20, not all 50)
   const filteredFeedback = activeFilter === "All" 
     ? randomFeedbacks
-    : convertFeedbackArray(filterFeedbacks(activeFilter))
+    : randomFeedbacks.filter(item => item.category === activeFilter)
 
   // Show dashboard content for admin users
   return (
@@ -98,8 +98,8 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => {
-                // Refresh random selection
-                setRandomFeedbacks(convertFeedbackArray(getRandomFeedbacks(25)))
+                // Refresh random selection - get 20 new random feedbacks
+                setRandomFeedbacks(convertFeedbackArray(getRandomFeedbacks(20)))
               }}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
               title="Refresh data"
