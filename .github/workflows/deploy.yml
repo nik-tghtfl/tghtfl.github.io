@@ -41,27 +41,32 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache node modules
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Cache pnpm store
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
         timeout-minutes: 10
         run: |
           echo "Installing dependencies..."
-          npm ci --prefer-offline --no-audit
+          pnpm install --frozen-lockfile
           echo "Dependencies installed successfully"
 
       - name: Verify installation
         run: |
           echo "Checking installed packages..."
-          npm list --depth=0 || true
+          pnpm list --depth=0 || true
           echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
+          echo "pnpm version: $(pnpm --version)"
 
       - name: Build
         timeout-minutes: 15
@@ -73,7 +78,7 @@ jobs:
         run: |
           echo "Starting build process..."
           set -e  # Exit on any error
-          npm run build
+          pnpm run build
           echo "Build completed successfully"
           echo "Checking for out directory..."
           if [ ! -d "out" ]; then
