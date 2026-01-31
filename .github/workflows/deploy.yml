@@ -55,6 +55,8 @@ jobs:
           echo "NPM version: $(npm --version)"
 
       - name: Build
+        env:
+          NEXT_PUBLIC_N8N_WEBHOOK_URL: ${{ secrets.NEXT_PUBLIC_N8N_WEBHOOK_URL }}
         run: |
           echo "Starting build process..."
           set -e  # Exit on any error

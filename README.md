@@ -112,6 +112,9 @@ Primary color is indigo/violet. Key tokens defined in `globals.css`:
 When adding features, you may need:
 
 \`\`\`env
+# n8n Webhook (required for V0.2+)
+NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/your-webhook-id
+
 # Database (choose one)
 DATABASE_URL=           # Neon/PostgreSQL connection string
 NEXT_PUBLIC_SUPABASE_URL=
@@ -120,6 +123,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 # AI (for categorization)
 OPENAI_API_KEY=         # Or use Vercel AI Gateway
 \`\`\`
+
+**Note:** For GitHub Pages deployment, you'll need to set the `NEXT_PUBLIC_N8N_WEBHOOK_URL` environment variable in your GitHub Actions workflow or use a build-time environment variable.
 
 ## Coding Conventions
 
