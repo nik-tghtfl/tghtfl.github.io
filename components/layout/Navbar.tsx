@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/feedback", label: "Submit Feedback" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/feedback/", label: "Submit Feedback" },
+  { href: "/dashboard/", label: "Dashboard" },
 ];
 
 export function Navbar() {
@@ -22,7 +22,10 @@ export function Navbar() {
           </Link>
           <div className="flex space-x-1">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              // Normalize pathname for comparison (handle trailing slashes)
+              const normalizedPathname = pathname?.replace(/\/$/, "") || "/";
+              const normalizedHref = link.href === "/" ? "/" : link.href.replace(/\/$/, "");
+              const isActive = normalizedPathname === normalizedHref;
               return (
                 <Link
                   key={link.href}

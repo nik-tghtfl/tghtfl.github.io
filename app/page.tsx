@@ -22,7 +22,7 @@ export default function Home() {
         </div>
         <div className="pt-4">
           <Link
-            href="/feedback"
+            href="/feedback/"
             className="inline-block px-8 py-4 bg-indigo-600 text-white text-lg font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-lg hover:shadow-xl"
           >
             Submit Feedback
