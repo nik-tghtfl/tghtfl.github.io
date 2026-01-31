@@ -37,15 +37,6 @@ const processAreas = [
   "Other",
 ]
 
-const ageRanges = [
-  "18-24",
-  "25-34",
-  "35-44",
-  "45-54",
-  "55+",
-  "Prefer not to say",
-]
-
 type SubmissionState = "idle" | "loading" | "success" | "error"
 
 interface FeedbackFormProps {
@@ -56,7 +47,6 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
   const [feedback, setFeedback] = useState("")
   const [department, setDepartment] = useState("")
   const [processArea, setProcessArea] = useState("")
-  const [userAgeRange, setUserAgeRange] = useState("")
   const [isAnonymous, setIsAnonymous] = useState(true)
   const [state, setState] = useState<SubmissionState>("idle")
   const [errorMessage, setErrorMessage] = useState("")
@@ -87,12 +77,6 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
       return false
     }
 
-    if (!userAgeRange) {
-      setErrorMessage("Please select your age range.")
-      setState("error")
-      return false
-    }
-
     return true
   }
 
@@ -101,7 +85,6 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
     feedback: string
     department: string
     processArea: string
-    userAgeRange: string
     isAnonymous: boolean
     user: User
   }): Promise<void> => {
@@ -125,9 +108,9 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
       feedback_text: formData.feedback.trim(),
       process_area: formData.processArea,
       user_role: formData.user.role,
-      user_age_range: formData.userAgeRange,
+      user_age_range: formData.user.ageRange || "Prefer not to say",
       user_department: formData.department,
-      k_anonymity_passed: formData.isAnonymous,
+      is_anonymous: formData.isAnonymous,
       // Include user name for n8n to filter if anonymous
       user_name: formData.user.displayName,
       user_id: formData.user.id,
@@ -165,7 +148,6 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
         feedback,
         department,
         processArea,
-        userAgeRange,
         isAnonymous,
         user,
       })
@@ -178,7 +160,6 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
         setFeedback("")
         setDepartment("")
         setProcessArea("")
-        setUserAgeRange("")
         setIsAnonymous(true)
         setState("idle")
       }, 3000)
@@ -273,32 +254,6 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
                 className="rounded-lg"
               >
                 {area}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Age Range Select */}
-      <div className="space-y-3">
-        <Label htmlFor="userAgeRange" className="text-sm font-medium">
-          Age Range
-        </Label>
-        <Select value={userAgeRange} onValueChange={setUserAgeRange} required>
-          <SelectTrigger
-            id="userAgeRange"
-            className="h-12 rounded-xl border-border/60 bg-background px-4 focus:ring-primary"
-          >
-            <SelectValue placeholder="Select your age range" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            {ageRanges.map((range) => (
-              <SelectItem
-                key={range}
-                value={range}
-                className="rounded-lg"
-              >
-                {range}
               </SelectItem>
             ))}
           </SelectContent>

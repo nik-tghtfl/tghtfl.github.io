@@ -9,6 +9,7 @@ const DEMO_USERS: (User & { password: string })[] = [
     displayName: "Lisa Berger",
     role: "member",
     team: "Product",
+    ageRange: "25-34",
   },
   {
     id: "2",
@@ -17,6 +18,7 @@ const DEMO_USERS: (User & { password: string })[] = [
     displayName: "Markus Hoffmann",
     role: "member",
     team: "Engineering",
+    ageRange: "35-44",
   },
   {
     id: "3",
@@ -25,6 +27,7 @@ const DEMO_USERS: (User & { password: string })[] = [
     displayName: "Tom Richter",
     role: "member",
     team: "Marketing",
+    ageRange: "25-34",
   },
   {
     id: "4",
@@ -33,6 +36,7 @@ const DEMO_USERS: (User & { password: string })[] = [
     displayName: "Nina Vogel",
     role: "member",
     team: "Customer Success",
+    ageRange: "25-34",
   },
   {
     id: "5",
@@ -41,6 +45,7 @@ const DEMO_USERS: (User & { password: string })[] = [
     displayName: "Sarah Klein",
     role: "admin",
     team: "HR",
+    ageRange: "35-44",
   },
   {
     id: "6",
@@ -49,6 +54,7 @@ const DEMO_USERS: (User & { password: string })[] = [
     displayName: "Admin User",
     role: "admin",
     team: "Management",
+    ageRange: "35-44",
   },
 ]
 

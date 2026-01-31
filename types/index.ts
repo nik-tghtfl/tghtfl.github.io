@@ -9,6 +9,7 @@ export interface User {
   displayName: string
   role: UserRole
   team: string
+  ageRange?: string
 }
 
 export interface Feedback {
