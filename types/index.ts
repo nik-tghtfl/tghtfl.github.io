@@ -42,6 +42,7 @@ export interface FeedbackItem {
   date: string
   createdAt?: string
   source?: string
+  actionRecommendation?: string
 }
 
 export interface CategoryData {

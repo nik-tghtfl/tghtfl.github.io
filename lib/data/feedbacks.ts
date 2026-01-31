@@ -14,6 +14,7 @@ export type Feedback = {
   sentiment: "positive" | "neutral" | "negative";
   summary: string;
   user_id: string;
+  actionRecommendation?: string;
 };
 
 /**
@@ -669,7 +670,8 @@ export function convertToFeedbackItem(feedback: Feedback): FeedbackItem {
     summary: feedback.summary,
     date: dateStr,
     createdAt: feedback.timestamp,
-    source: "n8n"
+    source: "n8n",
+    actionRecommendation: feedback.actionRecommendation,
   }
 }
 

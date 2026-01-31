@@ -59,6 +59,23 @@ export function FeedbackList({ feedback }: FeedbackListProps) {
               <p className="text-sm text-gray-700 leading-relaxed">
                 {item.summary}
               </p>
+              {item.actionRecommendation && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <div className="flex items-start gap-2">
+                    <span className="text-sm" title="AI-generated recommendation">
+                      🤖
+                    </span>
+                    <div className="flex-1 bg-indigo-50 border border-indigo-100 rounded-lg p-3">
+                      <p className="text-xs font-medium text-indigo-900 mb-1">
+                        AI Recommendation
+                      </p>
+                      <p className="text-sm text-indigo-800 leading-relaxed">
+                        {item.actionRecommendation}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
