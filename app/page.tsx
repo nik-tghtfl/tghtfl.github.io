@@ -9,13 +9,13 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="mx-auto max-w-3xl text-center">
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Welcome to <span className="text-primary">Quippi</span>
+          Welcome to <span className="text-primary">Quibi</span>
         </h1>
         <p className="mt-4 text-xl text-muted-foreground">
           Your voice matters. Share your feedback anonymously.
         </p>
         <p className="mx-auto mt-6 max-w-2xl text-muted-foreground leading-relaxed">
-          Quippi is a safe space for employees to share honest feedback without
+          Quibi is a safe space for employees to share honest feedback without
           fear of judgment. Our AI automatically categorizes your input, helping
           leaders understand what matters most to their teams.
         </p>

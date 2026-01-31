@@ -1,0 +1,68 @@
+# Quibi Project Rules for Cursor AI
+
+## Project Context
+Quibi is an anonymous employee feedback platform built with Next.js 16 (App Router), Tailwind CSS v4, and shadcn/ui.
+
+## Code Style
+
+### TypeScript
+- Use TypeScript for all files
+- Define shared types in `types/index.ts`
+- Prefer interfaces over types for object shapes
+- Use explicit return types for functions
+
+### React & Next.js
+- Use Server Components by default
+- Add "use client" directive only when needed (hooks, event handlers, browser APIs)
+- Use the App Router conventions (app/ directory)
+- Async components for data fetching
+
+### Styling
+- Use Tailwind CSS classes
+- Use `cn()` from `lib/utils` for conditional classes
+- Primary color is indigo/violet (`bg-primary`, `text-primary`)
+- Use semantic design tokens from globals.css
+
+### Components
+- Reuse components from `components/ui/` (shadcn/ui)
+- Create feature components in `components/[feature]/`
+- Layout components are in `components/layout/`
+
+## File Organization
+```
+app/           - Pages and API routes
+components/    - React components
+  layout/      - Navbar, Footer, etc.
+  ui/          - shadcn/ui components (don't modify)
+  [feature]/   - Feature-specific components
+hooks/         - Custom React hooks
+lib/           - Utilities and helpers
+types/         - TypeScript interfaces
+```
+
+## Key Patterns
+
+### Data Fetching
+- Prefer Server Components for data fetching
+- Use SWR for client-side data that needs real-time updates
+- Never fetch inside useEffect
+
+### Forms
+- Use shadcn/ui form components (Input, Textarea, Button)
+- Add proper validation
+- Show loading states during submission
+
+### Navigation
+- Update `components/layout/Navbar.tsx` when adding new pages
+- Use Next.js Link component for internal navigation
+
+## Current State (V0.1)
+- Basic layout with Navbar and Footer
+- Home page with hero and feature cards
+- Placeholder pages for /feedback and /dashboard
+- Types defined for Feedback and FeedbackProgram
+
+## Next Steps (V0.2)
+- Add database integration
+- Build feedback submission form
+- Store and retrieve feedback
