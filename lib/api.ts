@@ -264,9 +264,26 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
             : feedbackText
         }
 
+        // Safely parse timestamp - ensure it's a valid ISO string
+        let validTimestamp = submissionTime || new Date().toISOString()
+        try {
+          if (submissionTime) {
+            const testDate = new Date(submissionTime)
+            if (isNaN(testDate.getTime())) {
+              // Invalid date, use current time
+              validTimestamp = new Date().toISOString()
+            } else {
+              // Valid date, ensure it's in ISO format
+              validTimestamp = testDate.toISOString()
+            }
+          }
+        } catch {
+          validTimestamp = new Date().toISOString()
+        }
+
         return {
           id: submissionId,
-          timestamp: submissionTime || new Date().toISOString(),
+          timestamp: validTimestamp,
           feedback: feedbackText,
           department: affectedDepartment || "Other",
           anonymous: isAnonymous,
