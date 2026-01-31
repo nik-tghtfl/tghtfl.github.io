@@ -230,14 +230,14 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
       {/* Department Select */}
       <div className="space-y-3">
         <Label htmlFor="department" className="text-sm font-medium">
-          Department
+          In which department is this issue most visible?
         </Label>
         <Select value={department} onValueChange={setDepartment} required>
           <SelectTrigger
             id="department"
             className="h-12 rounded-xl border-border/60 bg-background px-4 focus:ring-primary"
           >
-            <SelectValue placeholder="Select your department" />
+            <SelectValue placeholder="Select department" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             {departments.map((dept) => (
@@ -256,14 +256,14 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
       {/* Process Area Select */}
       <div className="space-y-3">
         <Label htmlFor="processArea" className="text-sm font-medium">
-          Process Area
+          Area of Improvement
         </Label>
         <Select value={processArea} onValueChange={setProcessArea} required>
           <SelectTrigger
             id="processArea"
             className="h-12 rounded-xl border-border/60 bg-background px-4 focus:ring-primary"
           >
-            <SelectValue placeholder="Select process area" />
+            <SelectValue placeholder="Select area of improvement" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             {processAreas.map((area) => (
