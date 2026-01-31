@@ -131,7 +131,9 @@ function normalizeSentiment(value: string | undefined): "positive" | "neutral" |
  */
 export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
   // #region agent log
-  const debugLog = {location:'lib/api.ts:95',message:'getFeedbacksFromSheet called',data:{hasSheetId:!!process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID,hasApiKey:!!process.env.NEXT_PUBLIC_GOOGLE_API_KEY,sheetIdLength:process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID?.length||0,apiKeyLength:process.env.NEXT_PUBLIC_GOOGLE_API_KEY?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
+  const sheetIdCheck = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
+  const apiKeyCheck = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+  const debugLog = {location:'lib/api.ts:132',message:'getFeedbacksFromSheet called',data:{hasSheetId:!!sheetIdCheck,hasApiKey:!!apiKeyCheck,sheetIdValue:sheetIdCheck?.substring(0,10)||'missing',apiKeyValue:apiKeyCheck?.substring(0,10)||'missing',allEnvVars:Object.keys(process.env).filter(k=>k.startsWith('NEXT_PUBLIC')).join(',')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
   console.log('[DEBUG]', debugLog);
   fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
   // #endregion
@@ -140,14 +142,14 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
 
   if (!sheetId || !apiKey) {
     // #region agent log
-    const debugLog = {location:'lib/api.ts:100',message:'Missing credentials',data:{hasSheetId:!!sheetId,hasApiKey:!!apiKey},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
-    console.error('[DEBUG]', debugLog);
+    const debugLog = {location:'lib/api.ts:140',message:'Missing credentials',data:{hasSheetId:!!sheetId,hasApiKey:!!apiKey,sheetIdValue:sheetId||'undefined',apiKeyValue:apiKey||'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
+    console.error('[DEBUG] Missing credentials:', debugLog);
     fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
     // #endregion
     console.error(
       "Google Sheets API credentials not configured. Please set NEXT_PUBLIC_GOOGLE_SHEET_ID and NEXT_PUBLIC_GOOGLE_API_KEY"
     )
-    return []
+    throw new Error("Google Sheets API credentials not configured. Check environment variables.")
   }
 
   try {
