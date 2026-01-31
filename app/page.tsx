@@ -1,9 +1,23 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { MessageSquare, Shield, BarChart3 } from "lucide-react"
+import { useAuth } from "@/lib/hooks/useAuth"
 
 export default function HomePage() {
+  const { user, isLoading, isAdmin } = useAuth()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Show default button during loading to avoid layout shift
+  const showDashboardButton = mounted && !isLoading && isAdmin
+
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Hero Section */}
@@ -20,9 +34,15 @@ export default function HomePage() {
           leaders understand what matters most to their teams.
         </p>
         <div className="mt-8">
-          <Button asChild size="lg" className="rounded-lg px-8 py-6 text-lg">
-            <Link href="/feedback">Submit Feedback</Link>
-          </Button>
+          {showDashboardButton ? (
+            <Button asChild size="lg" className="rounded-lg px-8 py-6 text-lg">
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+          ) : (
+            <Button asChild size="lg" className="rounded-lg px-8 py-6 text-lg">
+              <Link href="/feedback">Submit Feedback</Link>
+            </Button>
+          )}
         </div>
       </section>
 
