@@ -1,6 +1,6 @@
 # Quippi
 
-> **Quippi cuts waste by listening to your employees.**
+**Quippi cuts waste by listening to your employees.**
 
 Quippi is an **employee intelligence gathering platform** built during the **AI Beavers Hackathon Hamburg**.  
 It helps companies uncover hidden inefficiencies by collecting anonymous employee feedback, detecting recurring patterns, and turning them into actionable insights for leadership.
