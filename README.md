@@ -11,7 +11,7 @@ An anonymous employee feedback platform that enables organizations to collect, c
 
 ## Project Structure
 
-```
+\`\`\`
 /
 ├── app/
 │   ├── layout.tsx          # Root layout with Navbar & Footer
@@ -31,7 +31,7 @@ An anonymous employee feedback platform that enables organizations to collect, c
 │   └── utils.ts            # Utility functions (cn helper)
 └── types/
     └── index.ts            # Shared TypeScript interfaces
-```
+\`\`\`
 
 ## Getting Started
 
@@ -42,13 +42,13 @@ An anonymous employee feedback platform that enables organizations to collect, c
 
 ### Installation
 
-```bash
+\`\`\`bash
 # Install dependencies
 npm install
 
 # Run development server
 npm run dev
-```
+\`\`\`
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.
 
@@ -111,7 +111,7 @@ Primary color is indigo/violet. Key tokens defined in `globals.css`:
 
 When adding features, you may need:
 
-```env
+\`\`\`env
 # Database (choose one)
 DATABASE_URL=           # Neon/PostgreSQL connection string
 NEXT_PUBLIC_SUPABASE_URL=
@@ -119,7 +119,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 # AI (for categorization)
 OPENAI_API_KEY=         # Or use Vercel AI Gateway
-```
+\`\`\`
 
 ## Coding Conventions
 
@@ -131,12 +131,12 @@ OPENAI_API_KEY=         # Or use Vercel AI Gateway
 
 ## Commands
 
-```bash
+\`\`\`bash
 npm run dev      # Start development server
 npm run build    # Build for production
 npm run start    # Start production server
 npm run lint     # Run ESLint
-```
+\`\`\`
 
 ## Continuing Development in Cursor
 

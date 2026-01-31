@@ -29,7 +29,7 @@ Quippi is an anonymous employee feedback platform built with Next.js 16 (App Rou
 - Layout components are in `components/layout/`
 
 ## File Organization
-```
+\`\`\`
 app/           - Pages and API routes
 components/    - React components
   layout/      - Navbar, Footer, etc.
@@ -38,7 +38,7 @@ components/    - React components
 hooks/         - Custom React hooks
 lib/           - Utilities and helpers
 types/         - TypeScript interfaces
-```
+\`\`\`
 
 ## Key Patterns
 
