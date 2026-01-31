@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    // #region agent log
-    // #endregion
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start"
