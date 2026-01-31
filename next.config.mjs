@@ -9,6 +9,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Ensure proper asset paths for static export
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/tghtfl.github.io' : '',
 }
 
 export default nextConfig
