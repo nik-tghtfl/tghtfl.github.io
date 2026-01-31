@@ -60,7 +60,7 @@ export default function FeedbackPage() {
         </p>
 
         <div className="mt-8">
-          <FeedbackForm />
+          <FeedbackForm user={user} />
         </div>
       </div>
     </div>

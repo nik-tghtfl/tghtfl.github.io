@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Alert } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
+import type { User } from "@/types"
 
 const departments = [
   "Engineering",
@@ -23,14 +24,39 @@ const departments = [
   "Sales",
   "HR",
   "Operations",
+  "Customer Success",
+  "Product",
   "Other",
+]
+
+const processAreas = [
+  "Process",
+  "Communication",
+  "Tools",
+  "Culture",
+  "Other",
+]
+
+const ageRanges = [
+  "18-24",
+  "25-34",
+  "35-44",
+  "45-54",
+  "55+",
+  "Prefer not to say",
 ]
 
 type SubmissionState = "idle" | "loading" | "success" | "error"
 
-export function FeedbackForm() {
+interface FeedbackFormProps {
+  user: User
+}
+
+export function FeedbackForm({ user }: FeedbackFormProps) {
   const [feedback, setFeedback] = useState("")
   const [department, setDepartment] = useState("")
+  const [processArea, setProcessArea] = useState("")
+  const [userAgeRange, setUserAgeRange] = useState("")
   const [isAnonymous, setIsAnonymous] = useState(true)
   const [state, setState] = useState<SubmissionState>("idle")
   const [errorMessage, setErrorMessage] = useState("")
@@ -55,6 +81,18 @@ export function FeedbackForm() {
       return false
     }
 
+    if (!processArea) {
+      setErrorMessage("Please select a process area.")
+      setState("error")
+      return false
+    }
+
+    if (!userAgeRange) {
+      setErrorMessage("Please select your age range.")
+      setState("error")
+      return false
+    }
+
     return true
   }
 
@@ -62,7 +100,10 @@ export function FeedbackForm() {
   const submitToN8n = async (formData: {
     feedback: string
     department: string
+    processArea: string
+    userAgeRange: string
     isAnonymous: boolean
+    user: User
   }): Promise<void> => {
     // Use environment variable if set, otherwise use the default webhook URL
     const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
@@ -72,17 +113,32 @@ export function FeedbackForm() {
       throw new Error("Webhook URL is not configured.")
     }
 
+    // Generate unique submission ID
+    const submissionId = `sub-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    const submissionTime = new Date().toISOString()
+
+    // Prepare payload with all required fields
+    // Note: user name is included so n8n can filter it out if anonymous
+    const payload = {
+      submission_time: submissionTime,
+      submission_id: submissionId,
+      feedback_text: formData.feedback.trim(),
+      process_area: formData.processArea,
+      user_role: formData.user.role,
+      user_age_range: formData.userAgeRange,
+      user_department: formData.department,
+      k_anonymity_passed: formData.isAnonymous,
+      // Include user name for n8n to filter if anonymous
+      user_name: formData.user.displayName,
+      user_id: formData.user.id,
+    }
+
     const response = await fetch(webhookUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        feedback: formData.feedback.trim(),
-        department: formData.department,
-        isAnonymous: formData.isAnonymous,
-        timestamp: new Date().toISOString(),
-      }),
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -108,7 +164,10 @@ export function FeedbackForm() {
       await submitToN8n({
         feedback,
         department,
+        processArea,
+        userAgeRange,
         isAnonymous,
+        user,
       })
 
       // Success state
@@ -118,6 +177,8 @@ export function FeedbackForm() {
       setTimeout(() => {
         setFeedback("")
         setDepartment("")
+        setProcessArea("")
+        setUserAgeRange("")
         setIsAnonymous(true)
         setState("idle")
       }, 3000)
@@ -182,10 +243,62 @@ export function FeedbackForm() {
             {departments.map((dept) => (
               <SelectItem
                 key={dept}
-                value={dept.toLowerCase()}
+                value={dept}
                 className="rounded-lg"
               >
                 {dept}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Process Area Select */}
+      <div className="space-y-3">
+        <Label htmlFor="processArea" className="text-sm font-medium">
+          Process Area
+        </Label>
+        <Select value={processArea} onValueChange={setProcessArea} required>
+          <SelectTrigger
+            id="processArea"
+            className="h-12 rounded-xl border-border/60 bg-background px-4 focus:ring-primary"
+          >
+            <SelectValue placeholder="Select process area" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            {processAreas.map((area) => (
+              <SelectItem
+                key={area}
+                value={area}
+                className="rounded-lg"
+              >
+                {area}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Age Range Select */}
+      <div className="space-y-3">
+        <Label htmlFor="userAgeRange" className="text-sm font-medium">
+          Age Range
+        </Label>
+        <Select value={userAgeRange} onValueChange={setUserAgeRange} required>
+          <SelectTrigger
+            id="userAgeRange"
+            className="h-12 rounded-xl border-border/60 bg-background px-4 focus:ring-primary"
+          >
+            <SelectValue placeholder="Select your age range" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            {ageRanges.map((range) => (
+              <SelectItem
+                key={range}
+                value={range}
+                className="rounded-lg"
+              >
+                {range}
               </SelectItem>
             ))}
           </SelectContent>
