@@ -11,8 +11,14 @@ import { StatsCards } from "@/components/dashboard/stats-cards"
 import { CategoryChart } from "@/components/dashboard/category-chart"
 import { FilterChips } from "@/components/dashboard/filter-chips"
 import { FeedbackList } from "@/components/dashboard/feedback-list"
-import { getMockDashboardData } from "@/lib/data/mock-data"
-import type { Category, DashboardData } from "@/types"
+import { 
+  getRandomFeedbacks, 
+  getDashboardStats, 
+  getCategoryDistribution,
+  filterFeedbacks,
+  convertFeedbackArray 
+} from "@/lib/data/feedbacks"
+import type { Category, FeedbackItem, DashboardStats, CategoryData } from "@/types"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -20,7 +26,11 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false)
   const [activeFilter, setActiveFilter] = useState<Category>("All")
   // Get fresh random data each time component mounts
-  const [dashboardData] = useState<DashboardData>(() => getMockDashboardData())
+  const [randomFeedbacks, setRandomFeedbacks] = useState<FeedbackItem[]>(() => 
+    convertFeedbackArray(getRandomFeedbacks(25))
+  )
+  const [stats] = useState<DashboardStats>(() => getDashboardStats())
+  const [categoryDistribution] = useState<CategoryData[]>(() => getCategoryDistribution())
 
   useEffect(() => {
     setMounted(true)
@@ -68,8 +78,8 @@ export default function DashboardPage() {
 
   // Filter feedback based on active filter
   const filteredFeedback = activeFilter === "All" 
-    ? dashboardData.feedback
-    : dashboardData.feedback.filter(item => item.category === activeFilter)
+    ? randomFeedbacks
+    : convertFeedbackArray(filterFeedbacks(activeFilter))
 
   // Show dashboard content for admin users
   return (
@@ -88,8 +98,8 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => {
-                // Refresh data by re-initializing (in future, this could trigger a data refresh)
-                window.location.reload()
+                // Refresh random selection
+                setRandomFeedbacks(convertFeedbackArray(getRandomFeedbacks(25)))
               }}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
               title="Refresh data"
@@ -104,15 +114,15 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           <StatsCards 
-            total={dashboardData.stats.total}
-            thisWeek={dashboardData.stats.thisWeek}
-            topCategory={dashboardData.stats.topCategory}
-            sentimentScore={dashboardData.stats.sentimentScore}
-            sentimentTrend={dashboardData.stats.sentimentTrend}
+            total={stats.total}
+            thisWeek={stats.thisWeek}
+            topCategory={stats.topCategory}
+            sentimentScore={stats.sentimentScore}
+            sentimentTrend={stats.sentimentTrend}
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <CategoryChart data={dashboardData.categoryDistribution} />
+            <CategoryChart data={categoryDistribution} />
             
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Feedback Overview</h3>
