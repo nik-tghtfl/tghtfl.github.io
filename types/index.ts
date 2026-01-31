@@ -12,21 +12,6 @@ export interface User {
   ageRange?: string
 }
 
-export interface Feedback {
-  id: string
-  content: string
-  category?: string
-  createdAt: Date
-}
-
-export interface FeedbackProgram {
-  id: string
-  title: string
-  description: string
-  isActive: boolean
-  createdAt: Date
-}
-
 // Dashboard Types
 export type Category = "All" | "Process" | "Communication" | "Tools" | "Culture" | "Other"
 
@@ -59,8 +44,3 @@ export interface DashboardStats {
   sentimentTrend: number
 }
 
-export interface DashboardData {
-  stats: DashboardStats
-  categoryDistribution: CategoryData[]
-  feedback: FeedbackItem[]
-}

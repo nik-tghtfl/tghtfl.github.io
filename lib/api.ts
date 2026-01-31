@@ -2,6 +2,7 @@
 // Google Sheets API integration
 
 import type { Feedback } from "@/lib/data/feedbacks"
+import { parseDateSafely } from "@/lib/data/feedbacks"
 
 // Google Sheets Configuration
 const SHEET_NAME = "Open-Feedback"
@@ -150,21 +151,9 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
         : feedbackText
 
       // Safely parse timestamp - ensure it's a valid ISO string
-      let validTimestamp = submissionTime || new Date().toISOString()
-      try {
-        if (submissionTime) {
-          const testDate = new Date(submissionTime)
-          if (isNaN(testDate.getTime())) {
-            // Invalid date, use current time
-            validTimestamp = new Date().toISOString()
-          } else {
-            // Valid date, ensure it's in ISO format
-            validTimestamp = testDate.toISOString()
-          }
-        }
-      } catch {
-        validTimestamp = new Date().toISOString()
-      }
+      const validTimestamp = submissionTime
+        ? parseDateSafely(submissionTime).toISOString()
+        : new Date().toISOString()
 
       feedbacks.push({
         id: submissionId,

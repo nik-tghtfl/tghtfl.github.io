@@ -1,12 +1,11 @@
 import React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist } from "next/font/google"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Quippi - Anonymous Employee Feedback",
@@ -29,7 +28,6 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-    generator: 'v0.app'
 }
 
 export default function RootLayout({
