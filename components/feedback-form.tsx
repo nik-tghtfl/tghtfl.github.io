@@ -125,7 +125,7 @@ export function FeedbackForm({ user }: FeedbackFormProps) {
   }): Promise<void> => {
     // Use environment variable if set, otherwise use the default webhook URL
     const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
-      "https://niktaughtful.app.n8n.cloud/webhook-test/8cc771d8-78fc-44bb-90ad-b3d5ac2ab7e4"
+      "https://niktaughtful.app.n8n.cloud/webhook/8cc771d8-78fc-44bb-90ad-b3d5ac2ab7e4"
 
     if (!webhookUrl) {
       throw new Error("Webhook URL is not configured.")
