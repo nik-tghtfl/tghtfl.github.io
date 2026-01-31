@@ -71,6 +71,10 @@ jobs:
           fi
           echo "out directory verified. Contents:"
           ls -la out/
+          echo "Checking CSS files:"
+          find out -name "*.css" -type f | head -5
+          echo "Checking index.html for CSS links:"
+          grep -i "stylesheet\|\.css" out/index.html || echo "No CSS links found in index.html"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
