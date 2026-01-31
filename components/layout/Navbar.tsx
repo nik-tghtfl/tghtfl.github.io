@@ -101,7 +101,9 @@ export function Navbar() {
           {user && (
             <div className="flex items-center gap-3 border-l border-border pl-4">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-foreground">{user.displayName}</span>
+                <span className="text-sm text-foreground">
+                  Hi, {user.displayName.split(" ")[0]}
+                </span>
                 {isAdmin && (
                   <Badge variant="secondary" className="text-xs">
                     Admin
@@ -109,10 +111,10 @@ export function Navbar() {
                 )}
               </div>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="text-muted-foreground hover:text-foreground"
+                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
               >
                 Logout
               </Button>
