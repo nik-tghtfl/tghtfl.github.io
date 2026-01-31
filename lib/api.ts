@@ -23,6 +23,12 @@ export async function generateSummaryFromFeedback(
   }
 
   try {
+    const prompt = `Summarize this employee feedback in one short sentence: ${feedbackText}`
+    // #region agent log
+    const debugLog1 = {location:'lib/api.ts:26',message:'Calling Gemini API',data:{promptLength:prompt.length,feedbackTextLength:feedbackText.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+    console.log('[DEBUG]', debugLog1);
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog1)}).catch(()=>{});
+    // #endregion
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
@@ -35,7 +41,7 @@ export async function generateSummaryFromFeedback(
             {
               parts: [
                 {
-                  text: `Summarize this employee feedback in one short sentence: ${feedbackText}`,
+                  text: prompt,
                 },
               ],
             },
@@ -43,17 +49,43 @@ export async function generateSummaryFromFeedback(
         }),
       }
     )
+    // #region agent log
+    const debugLog2 = {location:'lib/api.ts:47',message:'Gemini API response received',data:{status:response.status,statusText:response.statusText,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+    console.log('[DEBUG]', debugLog2);
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog2)}).catch(()=>{});
+    // #endregion
 
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.statusText}`)
+      const errorText = await response.text().catch(()=>'');
+      // #region agent log
+      const debugLog3 = {location:'lib/api.ts:50',message:'Gemini API error response',data:{status:response.status,statusText:response.statusText,errorText:errorText.substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+      console.error('[DEBUG]', debugLog3);
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog3)}).catch(()=>{});
+      // #endregion
+      throw new Error(`Gemini API error: ${response.statusText} - ${errorText.substring(0,200)}`)
     }
 
     const data = await response.json()
+    // #region agent log
+    const debugLog4 = {location:'lib/api.ts:57',message:'Gemini API data parsed',data:{hasCandidates:!!data.candidates,candidatesLength:data.candidates?.length||0,hasContent:!!data.candidates?.[0]?.content,hasParts:!!data.candidates?.[0]?.content?.parts,rawResponse:JSON.stringify(data).substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+    console.log('[DEBUG]', debugLog4);
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog4)}).catch(()=>{});
+    // #endregion
     const summary =
       data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || ""
+    // #region agent log
+    const debugLog5 = {location:'lib/api.ts:60',message:'Summary extracted',data:{summaryLength:summary.length,summary:summary.substring(0,100)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+    console.log('[DEBUG]', debugLog5);
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog5)}).catch(()=>{});
+    // #endregion
 
     // If summary is empty or too long, fallback to truncated text
     if (!summary || summary.length > 200) {
+      // #region agent log
+      const debugLog6 = {location:'lib/api.ts:63',message:'Summary invalid, using fallback',data:{summaryLength:summary.length,usingFallback:true},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+      console.warn('[DEBUG]', debugLog6);
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog6)}).catch(()=>{});
+      // #endregion
       return feedbackText.length > 100
         ? feedbackText.substring(0, 100) + "..."
         : feedbackText
@@ -61,6 +93,11 @@ export async function generateSummaryFromFeedback(
 
     return summary
   } catch (error) {
+    // #region agent log
+    const debugLog7 = {location:'lib/api.ts:72',message:'Gemini API error caught',data:{errorMessage:error instanceof Error?error.message:String(error),errorStack:error instanceof Error?error.stack?.substring(0,300):null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'};
+    console.error('[DEBUG]', debugLog7);
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog7)}).catch(()=>{});
+    // #endregion
     console.error("Failed to generate summary with Gemini:", error)
     // Fallback to truncated text on error
     return feedbackText.length > 100
