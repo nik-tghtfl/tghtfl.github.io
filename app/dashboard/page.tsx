@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, MessageSquareText, RefreshCw } from "lucide-react"
+import { AlertCircle, MessageSquareText, RefreshCw, Network } from "lucide-react"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { CategoryChart } from "@/components/dashboard/category-chart"
@@ -82,7 +82,7 @@ export default function DashboardPage() {
                 <MessageSquareText className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">QUIPPI</h1>
+                <h1 className="text-2xl font-bold text-gray-900">TechFlow GmbH</h1>
                 <p className="text-sm text-gray-500">Feedback Dashboard</p>
               </div>
             </div>
@@ -125,6 +125,21 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Coming Soon: Clustering */}
+          <section className="mx-auto mt-12 max-w-3xl">
+            <Card className="border-dashed border-2 border-border bg-muted/30">
+              <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+                <Network className="h-12 w-12 text-muted-foreground/50" />
+                <h3 className="mt-4 text-lg font-medium text-muted-foreground">
+                  Clustering
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Ask a question and see answers specifically to these clusters. Coming soon.
+                </p>
+              </CardContent>
+            </Card>
+          </section>
         </div>
       </main>
     </div>
