@@ -8,6 +8,19 @@ const SHEET_NAME = "Open-Feedback"
 const SHEET_RANGE = `${SHEET_NAME}!A2:M` // Skip header row, get columns A-M
 
 /**
+ * Helper to send debug logs only in development (localhost)
+ */
+function sendDebugLog(logData: any) {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logData)
+    }).catch(() => {})
+  }
+}
+
+/**
  * Convert string to boolean (handles "true"/"false", "1"/"0", etc.)
  */
 function parseBoolean(value: string | undefined): boolean {
@@ -36,7 +49,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
   const apiKeyCheck = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
   const debugLog = {location:'lib/api.ts:132',message:'getFeedbacksFromSheet called',data:{hasSheetId:!!sheetIdCheck,hasApiKey:!!apiKeyCheck,sheetIdValue:sheetIdCheck?.substring(0,10)||'missing',apiKeyValue:apiKeyCheck?.substring(0,10)||'missing',allEnvVars:Object.keys(process.env).filter(k=>k.startsWith('NEXT_PUBLIC')).join(',')},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
   console.log('[DEBUG]', debugLog);
-  fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+  sendDebugLog(debugLog);
   // #endregion
   const sheetId = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
@@ -45,7 +58,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     // #region agent log
     const debugLog = {location:'lib/api.ts:140',message:'Missing credentials',data:{hasSheetId:!!sheetId,hasApiKey:!!apiKey,sheetIdValue:sheetId||'undefined',apiKeyValue:apiKey||'undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'};
     console.error('[DEBUG] Missing credentials:', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    sendDebugLog(debugLog);
     // #endregion
     console.error(
       "Google Sheets API credentials not configured. Please set NEXT_PUBLIC_GOOGLE_SHEET_ID and NEXT_PUBLIC_GOOGLE_API_KEY"
@@ -58,7 +71,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     // #region agent log
     const debugLog = {location:'lib/api.ts:107',message:'Fetching from Google Sheets',data:{url:url.replace(apiKey,'***'),sheetRange:SHEET_RANGE},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
     console.log('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    sendDebugLog(debugLog);
     // #endregion
 
     const response = await fetch(url)
@@ -66,7 +79,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     {
       const debugLog = {location:'lib/api.ts:110',message:'API response received',data:{status:response.status,statusText:response.statusText,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
       console.log('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      sendDebugLog(debugLog);
     }
     // #endregion
 
@@ -76,7 +89,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
       {
         const debugLog = {location:'lib/api.ts:112',message:'API error response',data:{status:response.status,statusText:response.statusText,errorText:errorText.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'};
         console.error('[DEBUG]', debugLog);
-        fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+        sendDebugLog(debugLog);
       }
       // #endregion
       throw new Error(`Google Sheets API error: ${response.statusText}`)
@@ -87,7 +100,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     {
       const debugLog = {location:'lib/api.ts:115',message:'Data parsed from API',data:{hasValues:!!data.values,valuesLength:data.values?.length||0,firstRowSample:data.values?.[0]?.slice(0,3)||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
       console.log('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      sendDebugLog(debugLog);
     }
     // #endregion
 
@@ -95,7 +108,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
       // #region agent log
       const debugLog = {location:'lib/api.ts:117',message:'No data rows found',data:{hasValues:!!data.values,valuesLength:data.values?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
       console.warn('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      sendDebugLog(debugLog);
       // #endregion
       return []
     }
@@ -170,7 +183,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     {
       const debugLog = {location:'lib/api.ts:173',message:'Returning feedbacks',data:{totalFeedbacks:feedbacks.length,firstFeedbackId:feedbacks[0]?.id||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
       console.log('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      sendDebugLog(debugLog);
     }
     // #endregion
     return feedbacks
@@ -178,7 +191,7 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     // #region agent log
     const debugLog = {location:'lib/api.ts:175',message:'Error caught',data:{errorMessage:error instanceof Error?error.message:String(error),errorStack:error instanceof Error?error.stack?.substring(0,200):null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
     console.error('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    sendDebugLog(debugLog);
     // #endregion
     console.error("Failed to fetch feedbacks from Google Sheet:", error)
     return []

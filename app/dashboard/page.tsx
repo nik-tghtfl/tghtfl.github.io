@@ -20,6 +20,19 @@ import {
 import { getFeedbacksFromSheet } from "@/lib/api"
 import type { Category, FeedbackItem, DashboardStats, CategoryData } from "@/types"
 
+/**
+ * Helper to send debug logs only in development (localhost)
+ */
+function sendDebugLog(logData: any) {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logData)
+    }).catch(() => {})
+  }
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const { user, isLoading, isAdmin } = useAuth()
@@ -39,7 +52,7 @@ export default function DashboardPage() {
     // #region agent log
     const debugLog = {location:'app/dashboard/page.tsx:38',message:'fetchFeedbacks called',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
     console.log('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    sendDebugLog(debugLog);
     // #endregion
     setLoading(true)
     setError(null)
@@ -48,20 +61,20 @@ export default function DashboardPage() {
       // #region agent log
       const debugLog1 = {location:'app/dashboard/page.tsx:42',message:'Data received from API',data:{dataLength:data.length,firstItemId:data[0]?.id||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
       console.log('[DEBUG]', debugLog1);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog1)}).catch(()=>{});
+      sendDebugLog(debugLog1);
       // #endregion
       setFeedbacks(data)
       // #region agent log
       const debugLog2 = {location:'app/dashboard/page.tsx:43',message:'State updated with feedbacks',data:{dataLength:data.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
       console.log('[DEBUG]', debugLog2);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog2)}).catch(()=>{});
+      sendDebugLog(debugLog2);
       // #endregion
     } catch (err) {
       // #region agent log
       const errorMsg = err instanceof Error ? err.message : String(err)
       const debugLog = {location:'app/dashboard/page.tsx:59',message:'Error in fetchFeedbacks',data:{errorMessage:errorMsg,errorStack:err instanceof Error?err.stack?.substring(0,500):null,errorType:err instanceof Error?err.constructor.name:typeof err},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
       console.error('[DEBUG] Error in fetchFeedbacks:', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      sendDebugLog(debugLog);
       // #endregion
       console.error("Failed to fetch feedbacks:", err)
       // Show more specific error message
@@ -76,7 +89,7 @@ export default function DashboardPage() {
       // #region agent log
       const debugLog = {location:'app/dashboard/page.tsx:48',message:'Loading set to false',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
       console.log('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      sendDebugLog(debugLog);
       // #endregion
     }
   }, [])
@@ -96,13 +109,13 @@ export default function DashboardPage() {
     // #region agent log
     const debugLog1 = {location:'app/dashboard/page.tsx:63',message:'useEffect check',data:{mounted,isLoading,hasUser:!!user,isAdmin},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
     console.log('[DEBUG]', debugLog1);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog1)}).catch(()=>{});
+    sendDebugLog(debugLog1);
     // #endregion
     if (mounted && !isLoading && user && isAdmin) {
       // #region agent log
       const debugLog2 = {location:'app/dashboard/page.tsx:65',message:'Calling fetchFeedbacks from useEffect',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
       console.log('[DEBUG]', debugLog2);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog2)}).catch(()=>{});
+      sendDebugLog(debugLog2);
       // #endregion
       fetchFeedbacks()
     }
