@@ -162,26 +162,32 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
 
     const response = await fetch(url)
     // #region agent log
-    const debugLog = {location:'lib/api.ts:110',message:'API response received',data:{status:response.status,statusText:response.statusText,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
-    console.log('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    {
+      const debugLog = {location:'lib/api.ts:110',message:'API response received',data:{status:response.status,statusText:response.statusText,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
+      console.log('[DEBUG]', debugLog);
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    }
     // #endregion
 
     if (!response.ok) {
       // #region agent log
       const errorText = await response.text().catch(()=>'');
-      const debugLog = {location:'lib/api.ts:112',message:'API error response',data:{status:response.status,statusText:response.statusText,errorText:errorText.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'};
-      console.error('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      {
+        const debugLog = {location:'lib/api.ts:112',message:'API error response',data:{status:response.status,statusText:response.statusText,errorText:errorText.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'};
+        console.error('[DEBUG]', debugLog);
+        fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      }
       // #endregion
       throw new Error(`Google Sheets API error: ${response.statusText}`)
     }
 
     const data = await response.json()
     // #region agent log
-    const debugLog = {location:'lib/api.ts:115',message:'Data parsed from API',data:{hasValues:!!data.values,valuesLength:data.values?.length||0,firstRowSample:data.values?.[0]?.slice(0,3)||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-    console.log('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    {
+      const debugLog = {location:'lib/api.ts:115',message:'Data parsed from API',data:{hasValues:!!data.values,valuesLength:data.values?.length||0,firstRowSample:data.values?.[0]?.slice(0,3)||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
+      console.log('[DEBUG]', debugLog);
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    }
     // #endregion
 
     if (!data.values || data.values.length === 0) {
@@ -203,9 +209,11 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
     // Process rows in parallel for summary generation (with batching to avoid rate limits)
     const batchSize = 5 // Process 5 summaries at a time
     // #region agent log
-    const debugLog = {location:'lib/api.ts:129',message:'Starting row processing',data:{totalRows:data.values.length,batchSize:batchSize},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'};
-    console.log('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    {
+      const debugLog = {location:'lib/api.ts:129',message:'Starting row processing',data:{totalRows:data.values.length,batchSize:batchSize},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'};
+      console.log('[DEBUG]', debugLog);
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    }
     // #endregion
     for (let i = 0; i < data.values.length; i += batchSize) {
       const batch = data.values.slice(i, i + batchSize)
@@ -273,15 +281,19 @@ export async function getFeedbacksFromSheet(): Promise<Feedback[]> {
       const validResults = batchResults.filter((f): f is Feedback => f !== null)
       feedbacks.push(...validResults)
       // #region agent log
-      const debugLog = {location:'lib/api.ts:170',message:'Batch processed',data:{batchIndex:Math.floor(i/batchSize),batchSize:batch.length,validCount:validResults.length,totalFeedbacks:feedbacks.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'};
-      console.log('[DEBUG]', debugLog);
-      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      {
+        const debugLog = {location:'lib/api.ts:170',message:'Batch processed',data:{batchIndex:Math.floor(i/batchSize),batchSize:batch.length,validCount:validResults.length,totalFeedbacks:feedbacks.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'};
+        console.log('[DEBUG]', debugLog);
+        fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+      }
       // #endregion
     }
     // #region agent log
-    const debugLog = {location:'lib/api.ts:173',message:'Returning feedbacks',data:{totalFeedbacks:feedbacks.length,firstFeedbackId:feedbacks[0]?.id||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
-    console.log('[DEBUG]', debugLog);
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    {
+      const debugLog = {location:'lib/api.ts:173',message:'Returning feedbacks',data:{totalFeedbacks:feedbacks.length,firstFeedbackId:feedbacks[0]?.id||null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'};
+      console.log('[DEBUG]', debugLog);
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(debugLog)}).catch(()=>{});
+    }
     // #endregion
     return feedbacks
   } catch (error) {
