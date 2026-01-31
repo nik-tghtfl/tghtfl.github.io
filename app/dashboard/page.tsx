@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,12 +12,12 @@ import { CategoryChart } from "@/components/dashboard/category-chart"
 import { FilterChips } from "@/components/dashboard/filter-chips"
 import { FeedbackList } from "@/components/dashboard/feedback-list"
 import { 
-  getRandomFeedbacks, 
   calculateStatsFromFeedbacks,
   calculateCategoryDistributionFromFeedbacks,
   convertFeedbackArray,
   type Feedback
 } from "@/lib/data/feedbacks"
+import { getFeedbacksFromSheet } from "@/lib/api"
 import type { Category, FeedbackItem, DashboardStats, CategoryData } from "@/types"
 
 export default function DashboardPage() {
@@ -25,13 +25,29 @@ export default function DashboardPage() {
   const { user, isLoading, isAdmin } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [activeFilter, setActiveFilter] = useState<Category>("All")
-  // Get fresh random data each time component mounts - 20 random feedbacks (raw Feedback[])
-  const [randomFeedbacksRaw, setRandomFeedbacksRaw] = useState<Feedback[]>(() => getRandomFeedbacks(20))
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
-  // Calculate everything from the same 20 random feedbacks
-  const randomFeedbacks = convertFeedbackArray(randomFeedbacksRaw)
-  const stats = calculateStatsFromFeedbacks(randomFeedbacksRaw)
-  const categoryDistribution = calculateCategoryDistributionFromFeedbacks(randomFeedbacksRaw)
+  // Calculate everything from the fetched feedbacks
+  const feedbackItems = convertFeedbackArray(feedbacks)
+  const stats = calculateStatsFromFeedbacks(feedbacks)
+  const categoryDistribution = calculateCategoryDistributionFromFeedbacks(feedbacks)
+
+  // Fetch feedbacks from Google Sheets
+  const fetchFeedbacks = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getFeedbacksFromSheet()
+      setFeedbacks(data)
+    } catch (err) {
+      console.error("Failed to fetch feedbacks:", err)
+      setError("Failed to load feedback data. Please try again later.")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
     setMounted(true)
@@ -43,13 +59,23 @@ export default function DashboardPage() {
     }
   }, [mounted, isLoading, user, router])
 
-  // Show loading state while checking auth
-  if (!mounted || isLoading || !user) {
+  // Fetch feedbacks when component mounts and user is authenticated
+  useEffect(() => {
+    if (mounted && !isLoading && user && isAdmin) {
+      fetchFeedbacks()
+    }
+  }, [mounted, isLoading, user, isAdmin, fetchFeedbacks])
+
+  // Show loading state while checking auth or fetching data
+  if (!mounted || isLoading || !user || (isAdmin && loading)) {
     return (
       <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-12">
         <div className="text-center">
           <div className="h-8 w-48 animate-pulse rounded bg-muted mx-auto mb-4" />
           <div className="h-4 w-32 animate-pulse rounded bg-muted mx-auto" />
+          {isAdmin && loading && (
+            <p className="mt-4 text-sm text-muted-foreground">Loading feedback data...</p>
+          )}
         </div>
       </div>
     )
@@ -77,10 +103,10 @@ export default function DashboardPage() {
     )
   }
 
-  // Filter feedback based on active filter (filter from the random 20, not all 50)
+  // Filter feedback based on active filter
   const filteredFeedback = activeFilter === "All" 
-    ? randomFeedbacks
-    : randomFeedbacks.filter(item => item.category === activeFilter)
+    ? feedbackItems
+    : feedbackItems.filter(item => item.category === activeFilter)
 
   // Show dashboard content for admin users
   return (
@@ -98,15 +124,12 @@ export default function DashboardPage() {
               </div>
             </div>
             <button
-              onClick={() => {
-                // Refresh random selection - get 20 new random feedbacks
-                // This will trigger recalculation of stats and category distribution
-                setRandomFeedbacksRaw(getRandomFeedbacks(20))
-              }}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Refresh data"
+              onClick={() => fetchFeedbacks()}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Refresh data from Google Sheets"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               <span className="hidden sm:inline">Refresh</span>
             </button>
           </div>
@@ -114,6 +137,22 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {error && (
+          <div className="mb-6 rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <p className="text-sm text-destructive">{error}</p>
+            </div>
+            <Button
+              onClick={() => fetchFeedbacks()}
+              variant="outline"
+              size="sm"
+              className="mt-3"
+            >
+              Try Again
+            </Button>
+          </div>
+        )}
         <div className="space-y-8">
           <StatsCards 
             total={stats.total}

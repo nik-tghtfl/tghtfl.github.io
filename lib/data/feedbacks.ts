@@ -1,5 +1,6 @@
 // lib/data/feedbacks.ts
-// Mock feedback database - replace with n8n API calls later
+// Utility functions for feedback data processing
+// Note: Mock data (ALL_FEEDBACKS) is deprecated - use getFeedbacksFromSheet() from lib/api.ts instead
 
 import type { FeedbackItem, DashboardStats, CategoryData } from "@/types"
 
@@ -15,6 +16,10 @@ export type Feedback = {
   user_id: string;
 };
 
+/**
+ * @deprecated Use getFeedbacksFromSheet() from lib/api.ts instead
+ * This mock data is kept for reference only and will be removed in a future version.
+ */
 const ALL_FEEDBACKS: Feedback[] = [
   {
     "id": "1",
@@ -569,6 +574,10 @@ const ALL_FEEDBACKS: Feedback[] = [
 ];
 
 // Get random subset for dashboard
+/**
+ * @deprecated Use getFeedbacksFromSheet() from lib/api.ts instead
+ * This function is kept for backward compatibility but will be removed in a future version.
+ */
 export function getRandomFeedbacks(count: number = 25): Feedback[] {
   const shuffled = [...ALL_FEEDBACKS].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);

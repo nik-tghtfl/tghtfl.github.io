@@ -37,6 +37,9 @@ An anonymous employee feedback platform that enables organizations to collect, c
 │       ├── switch.tsx
 │       └── textarea.tsx
 ├── lib/
+│   ├── api.ts              # Google Sheets & Gemini API integration
+│   ├── data/
+│   │   └── feedbacks.ts    # Feedback type definitions & utility functions
 │   └── utils.ts            # Utility functions (cn helper)
 └── types/
     └── index.ts            # TypeScript interfaces
@@ -96,11 +99,13 @@ npm run build
 - [ ] Auto-categorize feedback on submission
 - [ ] Categories: Culture, Process, Management, Tools, Other
 
-### V0.4 - Admin Dashboard
-- [ ] Authentication for admin access
-- [ ] View all feedback with categories
-- [ ] Filter and search feedback
-- [ ] Basic analytics (feedback count, category breakdown)
+### V0.4 - Google Sheets Integration ✅ Complete
+- [x] Connect dashboard to Google Sheets API
+- [x] Fetch real feedback data from Google Sheet
+- [x] Google Gemini API integration for AI-generated summaries
+- [x] Real-time stats and analytics from sheet data
+- [x] Refresh button to reload latest data
+- [x] Error handling and loading states
 
 ### V0.5 - Feedback Programs
 - [ ] CRUD for feedback programs
@@ -109,29 +114,69 @@ npm run build
 
 ## Environment Variables
 
-### Required for V0.2+
+### Required for V0.2+ (Feedback Submission)
 
 ```env
 # n8n Webhook URL (required for feedback submission)
 NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/your-webhook-id
 ```
 
+### Required for V0.4+ (Dashboard - Google Sheets Integration)
+
+```env
+# Google Sheets API credentials
+NEXT_PUBLIC_GOOGLE_SHEET_ID=your_google_sheet_id_here
+NEXT_PUBLIC_GOOGLE_API_KEY=your_google_api_key_here
+
+# Google Gemini API (for AI-generated summaries)
+NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+**Google Sheet Setup:**
+- Document name: "Feedback_Data"
+- Tab/Worksheet name: "Open-Feedback"
+- Columns: A-M (submission_time, submission_id, is_anonymous, affected_department, feedback_text, process_area, user_id, user_name, user_role, user_age_range, user_department, user_action_recommendation, sentiment_analysis)
+- The sheet must be publicly readable (or use OAuth for private sheets)
+
+**Getting API Keys:**
+1. **Google Sheets API Key:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com)
+   - Create a new project or select existing
+   - Enable "Google Sheets API"
+   - Go to "Credentials" → "Create Credentials" → "API Key"
+   - Restrict the key to "Google Sheets API" (recommended)
+
+2. **Google Gemini API Key:**
+   - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create a new API key
+   - Copy the key for use in environment variables
+
 ### Setting up for GitHub Pages
 
 1. Go to your GitHub repository → **Settings** → **Secrets and variables** → **Actions**
-2. Click **New repository secret**
-3. Name: `NEXT_PUBLIC_N8N_WEBHOOK_URL`
-4. Value: Your n8n webhook URL
-5. Click **Add secret**
+2. Add the following repository secrets:
+   - `NEXT_PUBLIC_N8N_WEBHOOK_URL` - Your n8n webhook URL
+   - `NEXT_PUBLIC_GOOGLE_SHEET_ID` - Your Google Sheet ID (from the sheet URL)
+   - `NEXT_PUBLIC_GOOGLE_API_KEY` - Your Google Sheets API key
+   - `NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY` - Your Google Gemini API key
 
-The GitHub Actions workflow will automatically use this secret during the build process.
+3. Click **New repository secret** for each variable
+4. Enter the name and value, then click **Add secret**
+
+The GitHub Actions workflow will automatically use these secrets during the build process.
 
 ### For Local Development
 
 Create a `.env.local` file in the project root:
 
 ```env
+# n8n Webhook (V0.2+)
 NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/your-webhook-id
+
+# Google Sheets Integration (V0.4+)
+NEXT_PUBLIC_GOOGLE_SHEET_ID=your_google_sheet_id_here
+NEXT_PUBLIC_GOOGLE_API_KEY=your_google_api_key_here
+NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 **Note:** `.env.local` is already in `.gitignore` and won't be committed.
