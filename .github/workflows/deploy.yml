@@ -105,10 +105,14 @@ jobs:
           fi
           echo "out directory verified. Contents:"
           ls -la out/
+          echo "Checking for _next directory:"
+          ls -la out/_next/ 2>/dev/null || echo "WARNING: _next directory not found in out/"
+          echo "Checking for chunks:"
+          find out -name "*.js" -path "*/_next/static/chunks/*" | head -5 || echo "WARNING: No chunk files found"
           echo "Checking CSS files:"
           find out -name "*.css" -type f | head -5
-          echo "Checking index.html for CSS links:"
-          grep -i "stylesheet\|\.css" out/index.html || echo "No CSS links found in index.html"
+          echo "Checking index.html for script tags:"
+          grep -i "script\|_next" out/index.html | head -3 || echo "No script tags found in index.html"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
