@@ -71,6 +71,7 @@ jobs:
       - name: Build
         timeout-minutes: 15
         env:
+          NODE_ENV: production
           NEXT_PUBLIC_N8N_WEBHOOK_URL: ${{ secrets.NEXT_PUBLIC_N8N_WEBHOOK_URL }}
           NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL: ${{ secrets.NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL }}
           NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL: ${{ secrets.NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL }}
