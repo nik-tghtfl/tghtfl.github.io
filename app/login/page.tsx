@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent } from "react"
+import { useState, FormEvent, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { login, getDemoCredentials } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
@@ -14,8 +14,38 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
-  const demoCredentials = getDemoCredentials()
+  // #region agent log
+  useEffect(() => {
+    setMounted(true)
+    if (typeof window !== 'undefined') {
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/login/page.tsx:18',message:'LoginPage component mounted',data:{pathname:window.location.pathname,hostname:window.location.hostname},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    }
+  }, []);
+  // #endregion
+
+  // #region agent log
+  let demoCredentials;
+  try {
+    demoCredentials = getDemoCredentials();
+    if (typeof window !== 'undefined') {
+      console.log('[LOGIN DEBUG] getDemoCredentials success', demoCredentials);
+    }
+  } catch (error) {
+    console.error('[LOGIN DEBUG] getDemoCredentials error', error);
+    if (typeof window !== 'undefined') {
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/login/page.tsx:28',message:'getDemoCredentials error',data:{error:error instanceof Error ? error.message : String(error)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    }
+    demoCredentials = { member: { username: 'lisa', password: 'demo' }, admin: { username: 'admin', password: 'admin' } };
+  }
+  
+  useEffect(() => {
+    if (mounted && typeof window !== 'undefined') {
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/login/page.tsx:35',message:'LoginPage rendering',data:{hasDemoCredentials:!!demoCredentials,mounted:mounted},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    }
+  }, [mounted]);
+  // #endregion
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -38,11 +68,37 @@ export default function LoginPage() {
     }
   }
 
+  // #region agent log
+  if (typeof window !== 'undefined') {
+    console.log('[LOGIN DEBUG] Component rendering', { mounted, hasDemoCredentials: !!demoCredentials });
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/login/page.tsx:42',message:'LoginPage about to render',data:{mounted:mounted,hasDemoCredentials:!!demoCredentials,username:username.length,error:error.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  }
+  // #endregion
+
+  if (!mounted) {
+    // #region agent log
+    if (typeof window !== 'undefined') {
+      console.log('[LOGIN DEBUG] Not mounted, showing loading');
+    }
+    // #endregion
+    return (
+      <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-12">
+        <div className="text-lg">Loading...</div>
+      </div>
+    )
+  }
+
+  // #region agent log
+  if (typeof window !== 'undefined') {
+    console.log('[LOGIN DEBUG] Rendering login form');
+  }
+  // #endregion
+
   return (
     <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Login to Quibi</CardTitle>
+          <CardTitle className="text-2xl font-bold">Login to Quippi</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
