@@ -166,6 +166,31 @@ export default function DashboardPage() {
     }
   }
 
+  /**
+   * Clear all quip response tracking from localStorage
+   * This allows users to submit responses to quips again
+   */
+  const handleResetQuipResponses = () => {
+    if (typeof window === "undefined") return
+    
+    try {
+      // Clear all localStorage keys that match the quip response pattern
+      const keysToRemove: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('quibi_quip_responses_')) {
+          keysToRemove.push(key)
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key))
+      
+      setResetSuccess(true)
+      setTimeout(() => setResetSuccess(false), 3000)
+    } catch (error) {
+      console.error("Failed to clear quip responses from localStorage:", error)
+    }
+  }
+
   // Show loading state while checking auth or fetching data
   if (!mounted || isLoading || !user || (isAdmin && loading)) {
     return (
