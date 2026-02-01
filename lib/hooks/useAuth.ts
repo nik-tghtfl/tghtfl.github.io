@@ -24,9 +24,25 @@ export function useAuth(): UseAuthReturn {
     // Only run on client side
     if (typeof window !== "undefined") {
       const updateUser = () => {
-        const currentUser = getUser()
-        setUser(currentUser)
-        setIsLoading(false)
+        try {
+          const currentUser = getUser()
+          // #region agent log
+          console.log('[AUTH DEBUG] updateUser called', { hasUser: !!currentUser });
+          fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/hooks/useAuth.ts:26',message:'updateUser called',data:{hasUser:!!currentUser},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'})}).catch(()=>{});
+          // #endregion
+          setUser(currentUser)
+          setIsLoading(false)
+          // #region agent log
+          console.log('[AUTH DEBUG] isLoading set to false');
+          // #endregion
+        } catch (error) {
+          // #region agent log
+          console.error('[AUTH DEBUG] updateUser error', error);
+          fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/hooks/useAuth.ts:35',message:'updateUser error',data:{error:error instanceof Error ? error.message : String(error)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
+          // #endregion
+          setUser(null)
+          setIsLoading(false)
+        }
       }
 
       // Initial check

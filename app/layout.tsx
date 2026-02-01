@@ -35,6 +35,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // #region agent log
+  if (typeof window !== 'undefined') {
+    console.log('[LAYOUT DEBUG] RootLayout rendering');
+    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/layout.tsx:33',message:'RootLayout rendering',data:{pathname:window.location.pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
+  }
+  // #endregion
+  
   return (
     <html lang="en" className={_geist.className}>
       <body className="font-sans antialiased">

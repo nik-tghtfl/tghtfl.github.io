@@ -64,8 +64,23 @@ export function Navbar() {
   const { user, isLoading, isAdmin, logout } = useAuth()
   const [mounted, setMounted] = useState(false)
 
+  // #region agent log
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('[NAVBAR DEBUG] useAuth state', { user: !!user, isLoading, isAdmin, pathname });
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/layout/Navbar.tsx:68',message:'Navbar useAuth state',data:{hasUser:!!user,isLoading:isLoading,isAdmin:isAdmin,pathname:pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
+    }
+  }, [user, isLoading, isAdmin, pathname]);
+  // #endregion
+
   useEffect(() => {
     setMounted(true)
+    // #region agent log
+    if (typeof window !== 'undefined') {
+      console.log('[NAVBAR DEBUG] Navbar mounted');
+      fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/layout/Navbar.tsx:75',message:'Navbar mounted',data:{pathname:pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
+    }
+    // #endregion
   }, [])
 
   const handleLogout = () => {
@@ -75,6 +90,11 @@ export function Navbar() {
 
   // Show loading state to avoid hydration mismatch
   if (!mounted || isLoading) {
+    // #region agent log
+    if (typeof window !== 'undefined') {
+      console.log('[NAVBAR DEBUG] Showing loading state', { mounted, isLoading });
+    }
+    // #endregion
     return (
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -88,6 +108,12 @@ export function Navbar() {
       </header>
     )
   }
+
+  // #region agent log
+  if (typeof window !== 'undefined') {
+    console.log('[NAVBAR DEBUG] Rendering full navbar', { hasUser: !!user, navLinksCount: navLinks.length });
+  }
+  // #endregion
 
   // Determine which links to show based on auth state
   const navLinks = []
