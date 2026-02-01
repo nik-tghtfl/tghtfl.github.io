@@ -321,9 +321,13 @@ export async function getQuipsFromMock(): Promise<Quip[]> {
  * Create a new quip via n8n webhook
  */
 export async function createQuipInMock(quip: Omit<Quip, "id" | "created_at" | "responses">): Promise<Quip> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL
+  // Get env var - handle both undefined and empty string cases
+  // In Next.js static exports, missing env vars can become "undefined" string or actual undefined
+  const envVar = process.env.NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL
+  const webhookUrl = (envVar && envVar !== "undefined" && envVar.trim()) || 
+    "https://niktaughtful.app.n8n.cloud/webhook/533e2bee-94c9-44b3-83ca-4da889133ca3" // Production webhook
 
-  if (!webhookUrl) {
+  if (!webhookUrl || webhookUrl === "undefined") {
     throw new Error("Quip webhook URL is not configured. Please set NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL in your environment variables.")
   }
 
