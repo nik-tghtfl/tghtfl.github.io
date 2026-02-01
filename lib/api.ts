@@ -283,7 +283,7 @@ export async function submitQuipResponse(response: Omit<QuipResponse, "id" | "cr
   // In Next.js static exports, missing env vars can become "undefined" string or actual undefined
   const envVar = process.env.NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL
   const webhookUrl = (envVar && envVar !== "undefined" && envVar.trim()) || 
-    "https://niktaughtful.app.n8n.cloud/webhook-test/826e3794-6377-422f-afe1-8f858dc554c9"
+    "https://niktaughtful.app.n8n.cloud/webhook/826e3794-6377-422f-afe1-8f858dc554c9"
 
   if (!webhookUrl || webhookUrl === "undefined") {
     throw new Error("Quip response webhook URL is not configured. Please set NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL in your environment variables.")
