@@ -10,6 +10,8 @@ Follow these steps to get the API keys needed for the dashboard integration.
 4. Copy the `SHEET_ID` (the long string between `/d/` and `/edit`)
 5. Save this for later - you'll need it for `NEXT_PUBLIC_GOOGLE_SHEET_ID`
 
+id: 1uVVCLlI56ciqvIHs6O9KyYIx45_a4j0gSh1UVpf6l8g
+
 **Example:**
 - URL: `https://docs.google.com/spreadsheets/d/1a2b3c4d5e6f7g8h9i0j/edit`
 - Sheet ID: `1a2b3c4d5e6f7g8h9i0j`
@@ -43,6 +45,8 @@ Follow these steps to get the API keys needed for the dashboard integration.
 
 **Save this API key** - you'll need it for `NEXT_PUBLIC_GOOGLE_API_KEY`
 
+key: AIzaSyDIq3i4LZcPnAtj7IDGGP7tOqhpY-pFvUo
+
 ## Step 4: Get Google Gemini API Key
 
 1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
@@ -52,6 +56,8 @@ Follow these steps to get the API keys needed for the dashboard integration.
 5. Copy the API key that appears
 
 **Save this API key** - you'll need it for `NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY`
+
+key: AIzaSyC6P75RiVxT-_4TX_e4vjN47T8sZo6EI88
 
 ## Step 5: Make Your Google Sheet Publicly Readable (Required)
 

@@ -17,8 +17,13 @@ import {
   convertFeedbackArray,
   type Feedback
 } from "@/lib/data/feedbacks"
-import { getFeedbacksFromSheet } from "@/lib/api"
-import type { Category, FeedbackItem, DashboardStats, CategoryData } from "@/types"
+import { getFeedbacksFromSheet, getQuipsFromMock, getQuipResponsesFromMock, createQuipInMock, updateQuipStatus } from "@/lib/api"
+import type { Category, FeedbackItem, DashboardStats, CategoryData, Quip, QuipResponse } from "@/types"
+import { QuipList } from "@/components/quips/QuipList"
+import { QuipDetail } from "@/components/quips/QuipDetail"
+import { CreateQuipModal } from "@/components/quips/CreateQuipModal"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Plus, Megaphone } from "lucide-react"
 
 /**
  * Helper to send debug logs only in development (localhost)
@@ -41,6 +46,11 @@ export default function DashboardPage() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [quips, setQuips] = useState<Quip[]>([])
+  const [selectedQuip, setSelectedQuip] = useState<Quip | null>(null)
+  const [quipResponses, setQuipResponses] = useState<QuipResponse[]>([])
+  const [createQuipModalOpen, setCreateQuipModalOpen] = useState(false)
+  const [activeQuipTab, setActiveQuipTab] = useState<"active" | "closed">("active")
   
   // Calculate everything from the fetched feedbacks
   const feedbackItems = convertFeedbackArray(feedbacks)
@@ -104,6 +114,17 @@ export default function DashboardPage() {
     }
   }, [mounted, isLoading, user, router])
 
+  // Fetch quips
+  const fetchQuips = useCallback(async () => {
+    if (!isAdmin) return
+    try {
+      const data = await getQuipsFromMock()
+      setQuips(data)
+    } catch (error) {
+      console.error("Failed to fetch quips:", error)
+    }
+  }, [isAdmin])
+
   // Fetch feedbacks when component mounts and user is authenticated
   useEffect(() => {
     // #region agent log
@@ -118,8 +139,45 @@ export default function DashboardPage() {
       sendDebugLog(debugLog2);
       // #endregion
       fetchFeedbacks()
+      fetchQuips()
     }
-  }, [mounted, isLoading, user, isAdmin, fetchFeedbacks])
+  }, [mounted, isLoading, user, isAdmin, fetchFeedbacks, fetchQuips])
+
+  const handleCreateQuip = async (
+    newQuip: Omit<Quip, "id" | "created_at" | "responses">
+  ) => {
+    if (!user) return
+    try {
+      await createQuipInMock({
+        ...newQuip,
+        created_by: user.id,
+      })
+      await fetchQuips()
+    } catch (error) {
+      console.error("Failed to create quip:", error)
+      throw error
+    }
+  }
+
+  const handleCloseQuip = async (quip: Quip) => {
+    try {
+      await updateQuipStatus(quip.id, "closed")
+      await fetchQuips()
+    } catch (error) {
+      console.error("Failed to close quip:", error)
+    }
+  }
+
+  const handleViewResponses = async (quip: Quip) => {
+    setSelectedQuip(quip)
+    try {
+      const responses = await getQuipResponsesFromMock(quip.id)
+      setQuipResponses(responses)
+    } catch (error) {
+      console.error("Failed to fetch responses:", error)
+      setQuipResponses([])
+    }
+  }
 
   // Show loading state while checking auth or fetching data
   if (!mounted || isLoading || !user || (isAdmin && loading)) {
@@ -162,6 +220,28 @@ export default function DashboardPage() {
   const filteredFeedback = activeFilter === "All" 
     ? feedbackItems
     : feedbackItems.filter(item => item.category === activeFilter)
+
+  // Filter quips by status
+  const activeQuips = quips.filter((q) => q.status === "active")
+  const closedQuips = quips.filter((q) => q.status === "closed")
+
+  // Show quip detail view if selected
+  if (selectedQuip) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-6xl mx-auto p-6">
+          <QuipDetail
+            quip={selectedQuip}
+            responses={quipResponses}
+            onBack={() => {
+              setSelectedQuip(null)
+              setQuipResponses([])
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   // Show dashboard content for admin users
   return (
@@ -242,6 +322,65 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* Quips Section */}
+          <section className="mt-12">
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <Megaphone className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Quips</h2>
+                    <p className="text-sm text-gray-500">
+                      Create questions and collect anonymous feedback from your team.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => setCreateQuipModalOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Quip
+                </Button>
+              </div>
+
+              <Tabs
+                value={activeQuipTab}
+                onValueChange={(v) => setActiveQuipTab(v as "active" | "closed")}
+              >
+                <TabsList>
+                  <TabsTrigger value="active">
+                    Active ({activeQuips.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="closed">
+                    Closed ({closedQuips.length})
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="active" className="mt-4">
+                  <QuipList
+                    quips={activeQuips}
+                    variant="admin"
+                    onViewResponses={handleViewResponses}
+                    onClose={handleCloseQuip}
+                    emptyMessage="No active quips."
+                  />
+                </TabsContent>
+
+                <TabsContent value="closed" className="mt-4">
+                  <QuipList
+                    quips={closedQuips}
+                    variant="admin"
+                    onViewResponses={handleViewResponses}
+                    emptyMessage="No closed quips."
+                  />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </section>
+
           {/* Coming Soon: Clustering */}
           <section className="mx-auto mt-12 max-w-3xl">
             <Card className="border-dashed border-2 border-border bg-muted/30">
@@ -258,6 +397,12 @@ export default function DashboardPage() {
           </section>
         </div>
       </main>
+
+      <CreateQuipModal
+        open={createQuipModalOpen}
+        onOpenChange={setCreateQuipModalOpen}
+        onCreate={handleCreateQuip}
+      />
     </div>
   )
 }

@@ -44,3 +44,38 @@ export interface DashboardStats {
   sentimentTrend: number
 }
 
+// Quips Types
+export interface Quip {
+  id: string
+  title: string
+  description?: string
+  created_at: string
+  deadline?: string
+  status: "active" | "closed"
+  created_by: string
+  responses?: number
+}
+
+export interface QuipResponse {
+  id: string
+  quip_id: string
+  response: string
+  department: string
+  user_id: string
+  created_at: string
+  sentiment?: "positive" | "neutral" | "negative"
+}
+
+export const DEPARTMENTS = [
+  "Engineering",
+  "Product",
+  "Design",
+  "Marketing",
+  "Sales",
+  "Operations",
+  "Finance",
+  "HR",
+] as const
+
+export type Department = (typeof DEPARTMENTS)[number]
+

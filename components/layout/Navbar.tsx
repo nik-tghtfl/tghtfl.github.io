@@ -57,6 +57,9 @@ export function Navbar() {
   navLinks.push({ href: "/", label: "Home" })
 
   if (user) {
+    // Show Quips for all authenticated users
+    navLinks.push({ href: "/quips", label: "Quips" })
+    
     // Only members (not admins) can submit feedback
     if (!isAdmin) {
       navLinks.push({ href: "/feedback", label: "Submit Feedback" })
