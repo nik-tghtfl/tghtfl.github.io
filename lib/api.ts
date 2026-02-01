@@ -305,18 +305,50 @@ export async function getBlastsFromSheet(): Promise<Blast[]> {
 }
 
 /**
- * Create a new quip (using mock data for now)
+ * Create a new quip via n8n webhook
  */
 export async function createQuipInMock(quip: Omit<Quip, "id" | "created_at" | "responses">): Promise<Quip> {
-  const { mockQuips } = await import("@/lib/data/quips")
+  const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL || 
+    "https://niktaughtful.app.n8n.cloud/webhook-test/533e2bee-94c9-44b3-83ca-4da889133ca3"
+
+  if (!webhookUrl) {
+    throw new Error("Quip webhook URL is not configured.")
+  }
+
+  // Generate unique quip ID
+  const quipId = `quip-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+  const submissionTime = new Date().toISOString()
+
+  // Map to n8n webhook column format
+  const payload = {
+    quip_submission_time: submissionTime,
+    quip_id: quipId,
+    quip_title: quip.title.trim(),
+    quip_text: quip.description?.trim() || "",
+    quip_title_user_id: quip.created_by, // User ID who created the quip
+    quip_deadline: quip.deadline || "",
+  }
+
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to create quip: ${response.statusText}`)
+  }
+
+  // Return the created quip object
   const newQuip: Quip = {
     ...quip,
-    id: `quip-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-    created_at: new Date().toISOString(),
+    id: quipId,
+    created_at: submissionTime,
     responses: 0,
   }
-  // In a real implementation, this would be saved to Google Sheets
-  // For now, we just return the new quip (it won't persist)
+
   return newQuip
 }
 
