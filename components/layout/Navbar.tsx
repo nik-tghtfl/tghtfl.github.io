@@ -9,57 +9,50 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 function Logo() {
-  // #region agent log
-  if (typeof window !== 'undefined') {
-    const basePath = window.location.pathname.split('/')[1] || '';
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/layout/Navbar.tsx:12',message:'Logo component rendering',data:{basePath:basePath,currentPath:window.location.pathname,origin:window.location.origin},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  }
-  // #endregion
+  const [imageSrc, setImageSrc] = useState('/logo.png');
+  const [imageError, setImageError] = useState(false);
   
-  // Use regular img tag for static export compatibility with basePath
-  // Next.js handles basePath automatically for public assets in static exports
-  // Detect if we're in production (with basePath) or development (without)
-  const isProduction = typeof window !== 'undefined' && window.location.pathname.startsWith('/tghtfl.github.io');
-  const basePath = isProduction ? '/tghtfl.github.io' : '';
-  const imageSrc = `${basePath}/logo.png`;
-  
-  // #region agent log
-  if (typeof window !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/layout/Navbar.tsx:22',message:'Calculated image src',data:{imageSrc:imageSrc,pathname:window.location.pathname,fullUrl:window.location.origin + imageSrc},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  }
-  // #endregion
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Detect basePath: check if we're on GitHub Pages (production) or local dev
+      const pathname = window.location.pathname;
+      const hostname = window.location.hostname;
+      
+      // In production (GitHub Pages), we always have basePath
+      // In local dev, no basePath
+      const isProduction = hostname !== 'localhost' && hostname !== '127.0.0.1';
+      const hasBasePathInUrl = pathname.startsWith('/tghtfl.github.io');
+      
+      // Use basePath if we're in production OR if the URL already has it
+      const calculatedSrc = (isProduction || hasBasePathInUrl) 
+        ? '/tghtfl.github.io/logo.png' 
+        : '/logo.png';
+      
+      setImageSrc(calculatedSrc);
+    }
+  }, []);
   
   return (
     <div className="flex items-center gap-2">
-      <img
-        src={imageSrc}
-        alt="Quippi Logo"
-        width={32}
-        height={32}
-        className="h-8 w-8 object-contain"
-        onError={(e) => {
-          // #region agent log
-          const target = e.target as HTMLImageElement;
-          fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/layout/Navbar.tsx:35',message:'Image load error',data:{src:target?.src,currentSrc:target?.currentSrc,pathname:window.location.pathname},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-          // #endregion
-          // Fallback to original Q in blue square if image fails to load
-          if (target) {
-            target.style.display = 'none';
-            const fallback = target.parentElement?.querySelector('.logo-fallback');
-            if (fallback) {
-              (fallback as HTMLElement).style.display = 'flex';
-            }
-          }
-        }}
-        onLoad={() => {
-          // #region agent log
-          fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/layout/Navbar.tsx:48',message:'Image loaded successfully',data:{src:imageSrc},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-          // #endregion
-        }}
-      />
-      <div className="logo-fallback hidden h-8 w-8 items-center justify-center rounded-lg bg-primary">
-        <span className="text-sm font-bold text-primary-foreground">Q</span>
-      </div>
+      {!imageError ? (
+        <img
+          src={imageSrc}
+          alt="Quippi Logo"
+          width={32}
+          height={32}
+          className="h-8 w-8 object-contain"
+          onError={(e) => {
+            setImageError(true);
+          }}
+          onLoad={() => {
+            setImageError(false);
+          }}
+        />
+      ) : (
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+          <span className="text-sm font-bold text-primary-foreground">Q</span>
+        </div>
+      )}
       <span className="text-2xl font-bold text-foreground">Quippi</span>
     </div>
   )
