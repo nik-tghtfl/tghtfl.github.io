@@ -10,7 +10,7 @@ Follow these steps to get the API keys needed for the dashboard integration.
 4. Copy the `SHEET_ID` (the long string between `/d/` and `/edit`)
 5. Save this for later - you'll need it for `NEXT_PUBLIC_GOOGLE_SHEET_ID`
 
-id: 1uVVCLlI56ciqvIHs6O9KyYIx45_a4j0gSh1UVpf6l8g
+**Example Sheet ID:** `1a2b3c4d5e6f7g8h9i0j` (replace with your actual Sheet ID)
 
 **Example:**
 - URL: `https://docs.google.com/spreadsheets/d/1a2b3c4d5e6f7g8h9i0j/edit`
@@ -45,7 +45,7 @@ id: 1uVVCLlI56ciqvIHs6O9KyYIx45_a4j0gSh1UVpf6l8g
 
 **Save this API key** - you'll need it for `NEXT_PUBLIC_GOOGLE_API_KEY`
 
-key: AIzaSyDIq3i4LZcPnAtj7IDGGP7tOqhpY-pFvUo
+**Example API Key:** `AIzaSy...` (replace with your actual API key)
 
 ## Step 4: Get Google Gemini API Key
 
@@ -57,7 +57,7 @@ key: AIzaSyDIq3i4LZcPnAtj7IDGGP7tOqhpY-pFvUo
 
 **Save this API key** - you'll need it for `NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY`
 
-key: AIzaSyC6P75RiVxT-_4TX_e4vjN47T8sZo6EI88
+**Example API Key:** `AIzaSy...` (replace with your actual API key)
 
 ## Step 5: Make Your Google Sheet Publicly Readable (Required)
 
@@ -79,18 +79,24 @@ This requires additional setup with OAuth. For now, Option A is recommended.
 
 ### For Local Development
 
-1. Create a `.env.local` file in the project root (if it doesn't exist)
-2. Add these variables:
+1. Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Open `.env.local` and fill in your actual values:
 
 ```env
-# n8n Webhook (already configured)
-NEXT_PUBLIC_N8N_WEBHOOK_URL=https://niktaughtful.app.n8n.cloud/webhook/8cc771d8-78fc-44bb-90ad-b3d5ac2ab7e4
+# n8n Webhook URLs
+NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-instance.app.n8n.cloud/webhook/your-webhook-id
+NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL=https://your-instance.app.n8n.cloud/webhook/your-quip-webhook-id
 
 # Google Sheets Integration
 NEXT_PUBLIC_GOOGLE_SHEET_ID=your_sheet_id_here
 NEXT_PUBLIC_GOOGLE_API_KEY=your_google_sheets_api_key_here
 NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY=your_gemini_api_key_here
 ```
+
+**Note:** Copy `.env.example` to `.env.local` and fill in your actual values. Never commit `.env.local` to the repository.
 
 3. Replace the placeholder values with your actual keys
 4. Save the file

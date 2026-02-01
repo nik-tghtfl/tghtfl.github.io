@@ -308,11 +308,10 @@ export async function getBlastsFromSheet(): Promise<Blast[]> {
  * Create a new quip via n8n webhook
  */
 export async function createQuipInMock(quip: Omit<Quip, "id" | "created_at" | "responses">): Promise<Quip> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL || 
-    "https://niktaughtful.app.n8n.cloud/webhook/533e2bee-94c9-44b3-83ca-4da889133ca3"
+  const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL
 
   if (!webhookUrl) {
-    throw new Error("Quip webhook URL is not configured.")
+    throw new Error("Quip webhook URL is not configured. Please set NEXT_PUBLIC_N8N_QUIP_WEBHOOK_URL in your environment variables.")
   }
 
   // Generate unique quip ID
@@ -357,11 +356,10 @@ export async function createQuipInMock(quip: Omit<Quip, "id" | "created_at" | "r
  * @deprecated Use createQuipInMock instead. This will be replaced with n8n integration.
  */
 export async function createBlastInSheet(blast: Omit<Blast, "id" | "created_at" | "responses">): Promise<void> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
-    "https://niktaughtful.app.n8n.cloud/webhook/8cc771d8-78fc-44bb-90ad-b3d5ac2ab7e4"
+  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
 
   if (!webhookUrl) {
-    throw new Error("Webhook URL is not configured.")
+    throw new Error("Webhook URL is not configured. Please set NEXT_PUBLIC_N8N_WEBHOOK_URL in your environment variables.")
   }
 
   // Generate unique blast ID
@@ -489,11 +487,10 @@ export async function submitQuipResponse(response: Omit<QuipResponse, "id" | "cr
  * @deprecated Use submitQuipResponse instead. This will be replaced with n8n integration.
  */
 export async function submitBlastResponse(response: Omit<BlastResponse, "id" | "created_at">): Promise<void> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
-    "https://niktaughtful.app.n8n.cloud/webhook/8cc771d8-78fc-44bb-90ad-b3d5ac2ab7e4"
+  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
 
   if (!webhookUrl) {
-    throw new Error("Webhook URL is not configured.")
+    throw new Error("Webhook URL is not configured. Please set NEXT_PUBLIC_N8N_WEBHOOK_URL in your environment variables.")
   }
 
   // Generate unique response ID
@@ -538,11 +535,10 @@ export async function updateQuipStatus(quipId: string, status: "active" | "close
  * @deprecated Use updateQuipStatus instead. This will be replaced with n8n integration.
  */
 export async function updateBlastStatus(blastId: string, status: "active" | "closed"): Promise<void> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 
-    "https://niktaughtful.app.n8n.cloud/webhook/8cc771d8-78fc-44bb-90ad-b3d5ac2ab7e4"
+  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
 
   if (!webhookUrl) {
-    throw new Error("Webhook URL is not configured.")
+    throw new Error("Webhook URL is not configured. Please set NEXT_PUBLIC_N8N_WEBHOOK_URL in your environment variables.")
   }
 
   const payload = {
