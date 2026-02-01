@@ -5,24 +5,15 @@ import type { Feedback } from "@/lib/data/feedbacks"
 import { parseDateSafely } from "@/lib/data/feedbacks"
 import type { Quip, QuipResponse } from "@/types"
 
-// Legacy type aliases for backward compatibility during migration
-type Blast = Quip
-type BlastResponse = QuipResponse
-
 // Google Sheets Configuration
 const SHEET_NAME = "Open-Feedback"
 const SHEET_RANGE = `${SHEET_NAME}!A2:M` // Skip header row, get columns A-M
 
-// Blasts Configuration
-const BLASTS_SHEET_NAME = "Blasts"
-const BLASTS_RANGE = `${BLASTS_SHEET_NAME}!A2:G` // Skip header row, get columns A-G (id, title, description, created_at, deadline, status, created_by)
-const BLAST_RESPONSES_SHEET_NAME = "Blast-Responses"
-const BLAST_RESPONSES_RANGE = `${BLAST_RESPONSES_SHEET_NAME}!A2:G` // Skip header row, get columns A-G (id, blast_id, response, department, user_id, created_at, sentiment)
-
 /**
  * Helper to send debug logs only in development (localhost)
+ * Exported for use in other files
  */
-function sendDebugLog(logData: any) {
+export function sendDebugLog(logData: any) {
   if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c', {
       method: 'POST',
@@ -230,81 +221,6 @@ export async function getQuipsFromMock(): Promise<Quip[]> {
 }
 
 /**
- * Fetch all quips (using mock data for now)
- * @deprecated Use getQuipsFromMock instead. This will be replaced with Google Sheets integration.
- */
-export async function getBlastsFromSheet(): Promise<Blast[]> {
-  const sheetId = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
-
-  if (!sheetId || !apiKey) {
-    console.error("Google Sheets API credentials not configured")
-    return []
-  }
-
-  try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${BLASTS_RANGE}?key=${apiKey}`
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      throw new Error(`Google Sheets API error: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-
-    if (!data.values || data.values.length === 0) {
-      return []
-    }
-
-    // Map rows to Blast objects
-    // Column mapping: A=id, B=title, C=description, D=created_at, E=deadline, F=status, G=created_by
-    const blasts: Blast[] = []
-
-    for (let i = 0; i < data.values.length; i++) {
-      const row = data.values[i]
-      
-      const id = row[0] || "" // A
-      const title = row[1] || "" // B
-      const description = row[2] || "" // C
-      const created_at = row[3] || "" // D
-      const deadline = row[4] || "" // E
-      const status = (row[5] || "active") as "active" | "closed" // F
-      const created_by = row[6] || "" // G
-
-      // Skip empty rows
-      if (!title.trim() || !id) {
-        continue
-      }
-
-      // Safely parse timestamps
-      const validCreatedAt = created_at
-        ? parseDateSafely(created_at).toISOString()
-        : new Date().toISOString()
-      
-      const validDeadline = deadline
-        ? parseDateSafely(deadline).toISOString()
-        : undefined
-
-      blasts.push({
-        id,
-        title: title.trim(),
-        description: description.trim() || undefined,
-        created_at: validCreatedAt,
-        deadline: validDeadline,
-        status: status === "closed" ? "closed" : "active",
-        created_by,
-        responses: 0, // Will be calculated separately
-      })
-    }
-
-    return blasts
-  } catch (error) {
-    console.error("Failed to fetch blasts from Google Sheet:", error)
-    return []
-  }
-}
-
-/**
  * Create a new quip via n8n webhook
  */
 export async function createQuipInMock(quip: Omit<Quip, "id" | "created_at" | "responses">): Promise<Quip> {
@@ -352,45 +268,6 @@ export async function createQuipInMock(quip: Omit<Quip, "id" | "created_at" | "r
 }
 
 /**
- * Create a new blast via n8n webhook
- * @deprecated Use createQuipInMock instead. This will be replaced with n8n integration.
- */
-export async function createBlastInSheet(blast: Omit<Blast, "id" | "created_at" | "responses">): Promise<void> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
-
-  if (!webhookUrl) {
-    throw new Error("Webhook URL is not configured. Please set NEXT_PUBLIC_N8N_WEBHOOK_URL in your environment variables.")
-  }
-
-  // Generate unique blast ID
-  const blastId = `blast-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-  const createdAt = new Date().toISOString()
-
-  const payload = {
-    type: "blast",
-    id: blastId,
-    title: blast.title.trim(),
-    description: blast.description?.trim() || "",
-    created_at: createdAt,
-    deadline: blast.deadline || "",
-    status: blast.status,
-    created_by: blast.created_by,
-  }
-
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to create blast: ${response.statusText}`)
-  }
-}
-
-/**
  * Fetch all responses for a specific quip from mock data
  */
 export async function getQuipResponsesFromMock(quipId: string): Promise<QuipResponse[]> {
@@ -399,81 +276,10 @@ export async function getQuipResponsesFromMock(quipId: string): Promise<QuipResp
 }
 
 /**
- * Fetch all responses for a specific blast
- * @deprecated Use getQuipResponsesFromMock instead
- */
-export async function getBlastResponsesFromSheet(blastId: string): Promise<BlastResponse[]> {
-  const sheetId = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
-
-  if (!sheetId || !apiKey) {
-    console.error("Google Sheets API credentials not configured")
-    return []
-  }
-
-  try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${BLAST_RESPONSES_RANGE}?key=${apiKey}`
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      throw new Error(`Google Sheets API error: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-
-    if (!data.values || data.values.length === 0) {
-      return []
-    }
-
-    // Map rows to BlastResponse objects
-    // Column mapping: A=id, B=blast_id, C=response, D=department, E=user_id, F=created_at, G=sentiment
-    const responses: BlastResponse[] = []
-
-    for (let i = 0; i < data.values.length; i++) {
-      const row = data.values[i]
-      
-      const id = row[0] || "" // A
-      const rowBlastId = row[1] || "" // B
-      const responseText = row[2] || "" // C
-      const department = row[3] || "" // D
-      const userId = row[4] || "" // E
-      const created_at = row[5] || "" // F
-      const sentiment = normalizeSentiment(row[6]) // G
-
-      // Only include responses for this blast
-      if (rowBlastId !== blastId || !responseText.trim() || !id) {
-        continue
-      }
-
-      // Safely parse timestamp
-      const validCreatedAt = created_at
-        ? parseDateSafely(created_at).toISOString()
-        : new Date().toISOString()
-
-      responses.push({
-        id,
-        blast_id: rowBlastId,
-        response: responseText.trim(),
-        department,
-        user_id: userId,
-        created_at: validCreatedAt,
-        sentiment: sentiment !== "neutral" ? sentiment : undefined,
-      })
-    }
-
-    return responses
-  } catch (error) {
-    console.error("Failed to fetch blast responses from Google Sheet:", error)
-    return []
-  }
-}
-
-/**
  * Submit a quip response via n8n webhook
  */
 export async function submitQuipResponse(response: Omit<QuipResponse, "id" | "created_at">): Promise<QuipResponse> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL || 
-    "https://niktaughtful.app.n8n.cloud/webhook-test/826e3794-6377-422f-afe1-8f858dc554c9"
+  const webhookUrl = process.env.NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL
 
   if (!webhookUrl) {
     throw new Error("Quip response webhook URL is not configured. Please set NEXT_PUBLIC_N8N_QUIP_RESPONSE_WEBHOOK_URL in your environment variables.")
@@ -518,45 +324,6 @@ export async function submitQuipResponse(response: Omit<QuipResponse, "id" | "cr
 }
 
 /**
- * Submit a blast response via n8n webhook
- * @deprecated Use submitQuipResponse instead. This will be replaced with n8n integration.
- */
-export async function submitBlastResponse(response: Omit<BlastResponse, "id" | "created_at">): Promise<void> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
-
-  if (!webhookUrl) {
-    throw new Error("Webhook URL is not configured. Please set NEXT_PUBLIC_N8N_WEBHOOK_URL in your environment variables.")
-  }
-
-  // Generate unique response ID
-  const responseId = `response-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-  const createdAt = new Date().toISOString()
-
-  const payload = {
-    type: "blast_response",
-    id: responseId,
-    blast_id: response.blast_id,
-    response: response.response.trim(),
-    department: response.department,
-    user_id: response.user_id,
-    created_at: createdAt,
-    sentiment: response.sentiment || "",
-  }
-
-  const apiResponse = await fetch(webhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  })
-
-  if (!apiResponse.ok) {
-    throw new Error(`Failed to submit response: ${apiResponse.statusText}`)
-  }
-}
-
-/**
  * Update quip status (using mock data for now)
  */
 export async function updateQuipStatus(quipId: string, status: "active" | "closed"): Promise<void> {
@@ -565,32 +332,3 @@ export async function updateQuipStatus(quipId: string, status: "active" | "close
   console.log(`Would update quip ${quipId} to status ${status}`)
 }
 
-/**
- * Update blast status (close/reopen) via n8n webhook
- * @deprecated Use updateQuipStatus instead. This will be replaced with n8n integration.
- */
-export async function updateBlastStatus(blastId: string, status: "active" | "closed"): Promise<void> {
-  const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL
-
-  if (!webhookUrl) {
-    throw new Error("Webhook URL is not configured. Please set NEXT_PUBLIC_N8N_WEBHOOK_URL in your environment variables.")
-  }
-
-  const payload = {
-    type: "blast_update",
-    id: blastId,
-    status: status,
-  }
-
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to update blast status: ${response.statusText}`)
-  }
-}

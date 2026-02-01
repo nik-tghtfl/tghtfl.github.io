@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, MessageSquareText, RefreshCw, Network } from "lucide-react"
+import { AlertCircle, MessageSquareText, RefreshCw, Network, Plus, Megaphone } from "lucide-react"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { CategoryChart } from "@/components/dashboard/category-chart"
@@ -17,26 +17,12 @@ import {
   convertFeedbackArray,
   type Feedback
 } from "@/lib/data/feedbacks"
-import { getFeedbacksFromSheet, getQuipsFromMock, getQuipResponsesFromMock, createQuipInMock, updateQuipStatus } from "@/lib/api"
+import { getFeedbacksFromSheet, getQuipsFromMock, getQuipResponsesFromMock, createQuipInMock, updateQuipStatus, sendDebugLog } from "@/lib/api"
 import type { Category, FeedbackItem, DashboardStats, CategoryData, Quip, QuipResponse } from "@/types"
 import { QuipList } from "@/components/quips/QuipList"
 import { QuipDetail } from "@/components/quips/QuipDetail"
 import { CreateQuipModal } from "@/components/quips/CreateQuipModal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Megaphone } from "lucide-react"
-
-/**
- * Helper to send debug logs only in development (localhost)
- */
-function sendDebugLog(logData: any) {
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    fetch('http://127.0.0.1:7242/ingest/94295a68-58c0-4c7f-a369-b8d6564b2c9c', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(logData)
-    }).catch(() => {})
-  }
-}
 
 export default function DashboardPage() {
   const router = useRouter()
