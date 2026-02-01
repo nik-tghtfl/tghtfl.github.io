@@ -3,23 +3,37 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 function Logo() {
+  // Use regular img tag for static export compatibility with basePath
+  // Next.js Image component may have issues with basePath in static exports
   return (
     <div className="flex items-center gap-2">
-      <Image
+      <img
         src="/logo.png"
         alt="Quippi Logo"
         width={32}
         height={32}
         className="h-8 w-8 object-contain"
-        priority
+        onError={(e) => {
+          // Fallback to original Q in blue square if image fails to load
+          const target = e.target as HTMLImageElement;
+          if (target) {
+            target.style.display = 'none';
+            const fallback = target.parentElement?.querySelector('.logo-fallback');
+            if (fallback) {
+              (fallback as HTMLElement).style.display = 'flex';
+            }
+          }
+        }}
       />
+      <div className="logo-fallback hidden h-8 w-8 items-center justify-center rounded-lg bg-primary">
+        <span className="text-sm font-bold text-primary-foreground">Q</span>
+      </div>
       <span className="text-2xl font-bold text-foreground">Quippi</span>
     </div>
   )
