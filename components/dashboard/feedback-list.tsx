@@ -39,7 +39,7 @@ export function FeedbackList({ feedback }: FeedbackListProps) {
         {feedback.map((item) => (
           <div
             key={item.id}
-            className="relative p-4 rounded-lg border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors"
+            className="relative p-4 rounded-lg border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors transition-transform duration-150 ease-out hover:-translate-y-0.5 hover:shadow-md hover:shadow-gray-200/70"
           >
             {item.actionRecommendation && (
               <div className="absolute top-3 right-3">

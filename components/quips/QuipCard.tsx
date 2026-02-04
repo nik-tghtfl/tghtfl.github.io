@@ -77,7 +77,7 @@ export function QuipCard({
   const endingSoon = isEndingSoon(quip.deadline)
 
   return (
-    <Card className="relative">
+    <Card className="relative transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-100/80">
       <CardHeader className="flex-row items-start justify-between space-y-0">
         <div className="flex items-center gap-2">
           <Megaphone className="h-5 w-5 text-blue-600" />

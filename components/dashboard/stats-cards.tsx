@@ -42,7 +42,7 @@ export function StatsCards({ total, thisWeek, topCategory, sentimentScore, senti
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="bg-white rounded-xl border border-gray-200 p-6"
+          className="bg-white rounded-xl border border-gray-200 p-6 transition-transform duration-200 ease-out hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-100/80 hover:border-blue-200"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">

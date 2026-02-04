@@ -165,7 +165,7 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="mx-auto mt-20 max-w-4xl">
         <div className="grid gap-6 sm:grid-cols-3">
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card transition-transform duration-200 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10">
             <CardContent className="flex flex-col items-center p-6 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                 <Shield className="h-6 w-6 text-primary" />
@@ -177,7 +177,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card transition-transform duration-200 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10">
             <CardContent className="flex flex-col items-center p-6 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                 <MessageSquare className="h-6 w-6 text-primary" />
@@ -191,7 +191,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          <Card className="border-border bg-card">
+          <Card className="border-border bg-card transition-transform duration-200 ease-out hover:-translate-y-1 hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/10">
             <CardContent className="flex flex-col items-center p-6 text-center">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                 <BarChart3 className="h-6 w-6 text-primary" />
