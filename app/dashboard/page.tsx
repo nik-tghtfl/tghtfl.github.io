@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
@@ -24,7 +24,7 @@ import { QuipDetail } from "@/components/quips/QuipDetail"
 import { CreateQuipModal } from "@/components/quips/CreateQuipModal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, isLoading, isAdmin } = useAuth()
@@ -472,5 +472,23 @@ export default function DashboardPage() {
         onCreate={handleCreateQuip}
       />
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-screen items-center justify-center px-4 py-12">
+          <div className="text-center">
+            <div className="h-8 w-48 animate-pulse rounded bg-muted mx-auto mb-4" />
+            <div className="h-4 w-32 animate-pulse rounded bg-muted mx-auto" />
+            <p className="mt-4 text-sm text-muted-foreground">Loading dashboard...</p>
+          </div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   )
 }
