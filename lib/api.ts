@@ -618,6 +618,77 @@ export async function submitQuipResponse(response: Omit<QuipResponse, "id" | "cr
 }
 
 /**
+ * Fetch users from Google Sheets Users tab
+ * Returns a Map of user_id -> { name: string, department: string }
+ */
+export async function getUsersFromSheet(): Promise<Map<string, { name: string; department: string }>> {
+  const sheetId = process.env.NEXT_PUBLIC_GOOGLE_SHEET_ID
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+
+  if (!sheetId || !apiKey) {
+    console.warn("Google Sheets API credentials not configured. Cannot fetch users.")
+    return new Map()
+  }
+
+  // Try multiple sheet name variations
+  const USER_SHEET_NAMES = [
+    "Users",
+    "User",
+    "user",
+    "User List",
+    "Users List"
+  ]
+  const USER_SHEET_RANGE = `!A2:C` // Skip header row, columns A-C (user_id, name, department)
+
+  for (const sheetName of USER_SHEET_NAMES) {
+    try {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}${USER_SHEET_RANGE}?key=${apiKey}`
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        if (response.status === 400) {
+          continue // Try next sheet name
+        }
+        throw new Error(`Google Sheets API error: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+
+      if (!data.values || data.values.length === 0) {
+        return new Map()
+      }
+
+      const userMap = new Map<string, { name: string; department: string }>()
+
+      for (const row of data.values) {
+        const userId = (row[0] || "").trim() // A - user_id
+        const name = (row[1] || "").trim() // B - name
+        const department = (row[2] || "").trim() // C - department
+
+        if (userId && name) {
+          userMap.set(userId, {
+            name,
+            department: department || "Unknown",
+          })
+        }
+      }
+
+      return userMap
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("400")) {
+        continue // Try next sheet name
+      }
+      console.warn(`Failed to fetch from sheet "${sheetName}":`, error)
+      continue
+    }
+  }
+
+  // If all attempts failed, return empty map
+  console.warn("Could not find Users sheet. Tried:", USER_SHEET_NAMES)
+  return new Map()
+}
+
+/**
  * Update quip status (using mock data for now)
  */
 export async function updateQuipStatus(quipId: string, status: "active" | "closed"): Promise<void> {

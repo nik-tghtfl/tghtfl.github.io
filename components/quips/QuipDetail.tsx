@@ -1,10 +1,12 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Quip, QuipResponse } from "@/types"
 import { ResponseCard } from "./ResponseCard"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Megaphone, MessageSquare } from "lucide-react"
+import { getUsersFromSheet } from "@/lib/api"
 
 interface QuipDetailProps {
   quip: Quip
@@ -13,6 +15,20 @@ interface QuipDetailProps {
 }
 
 export function QuipDetail({ quip, responses, onBack }: QuipDetailProps) {
+  const [users, setUsers] = useState<Map<string, { name: string; department: string }>>(new Map())
+
+  useEffect(() => {
+    async function loadUsers() {
+      try {
+        const userMap = await getUsersFromSheet()
+        setUsers(userMap)
+      } catch (error) {
+        console.error("Failed to fetch users:", error)
+      }
+    }
+    loadUsers()
+  }, [])
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -56,9 +72,19 @@ export function QuipDetail({ quip, responses, onBack }: QuipDetailProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {responses.map((response) => (
-            <ResponseCard key={response.id} response={response} />
-          ))}
+          {responses.map((response) => {
+            // Get department from Users sheet if available, otherwise use response.department
+            const userData = users.get(response.user_id)
+            const userDepartment = userData?.department
+
+            return (
+              <ResponseCard
+                key={response.id}
+                response={response}
+                userDepartment={userDepartment}
+              />
+            )
+          })}
         </div>
       )}
     </div>
