@@ -337,9 +337,9 @@ export default function DashboardPage() {
           {/* Quips Section */}
           <section className="mt-12">
             <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="mb-6">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 p-2 bg-blue-100 rounded-lg">
                     <Megaphone className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
@@ -349,10 +349,10 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="mt-4 flex flex-col sm:flex-row gap-3">
                   <Button
                     variant="outline"
-                    className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                    className="flex-1 sm:flex-none border-orange-500 text-orange-600 hover:bg-orange-50 flex items-center justify-center"
                     onClick={handleResetQuipResponses}
                     title="Reset quip response tracking - allows users to submit responses again"
                   >
@@ -360,7 +360,7 @@ export default function DashboardPage() {
                     Reset Responses
                   </Button>
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center"
                     onClick={() => setCreateQuipModalOpen(true)}
                   >
                     <Plus className="h-4 w-4 mr-2" />
