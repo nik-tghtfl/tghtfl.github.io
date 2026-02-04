@@ -202,19 +202,6 @@ export default function DashboardPage() {
     }
   }
 
-  const handleViewResponses = useCallback(async (quip: Quip) => {
-    setSelectedQuip(quip)
-    try {
-      const allResponses = await getQuipResponsesFromSheet()
-      // Filter responses for this specific quip
-      const responses = allResponses.filter((r) => r.quip_id === quip.id)
-      setQuipResponses(responses)
-    } catch (error) {
-      console.error("Failed to fetch responses:", error)
-      setQuipResponses([])
-    }
-  }, [])
-
   /**
    * Clear all quip response tracking from localStorage
    * This allows users to submit responses to quips again
